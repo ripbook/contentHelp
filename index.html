@@ -11,56 +11,107 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
+	<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix"></script>
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --accent-color: #3498db;
-            --bunny-color: #9b59b6;
-            --bg-color: #f4f7f6;
-            --card-bg: #ffffff;
-            --text-color: #333;
-        }
+    /* Updated to the new dark theme palette */
+    --primary-color: #1e293b;
+    --accent-color: #3b82f6;
+    --bunny-color: #9b59b6;
+    --bg-color: #0f172a; /* Deep dark background */
+    --card-bg: #1e293b; /* Slate card background */
+    --text-color: #f8fafc;
+    --text-muted: #94a3b8;
+    --border-color: #334155;
+}
 
-        body {
-            font-family: 'Poppins', 'Mukta Malar', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0; padding: 20px;
-            display: flex; justify-content: center;
-        }
+body {
+    font-family: 'Poppins', 'Mukta Malar', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0; padding: 20px;
+    display: flex; justify-content: center;
+}
 
-        .container { max-width: 1200px; width: 100%; }
-        
-        /* Logo Styles */
-        .logo-container { text-align: center; margin-bottom: 10px; }
-        .main-logo { max-width: 50px; height: auto; }
+.container { max-width: 1200px; width: 100%; }
 
-        .header { text-align: center; margin-bottom: 40px; }
-        .header h1 { color: var(--primary-color); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-top: 10px; }
+/* Header & Logo */
+.logo-container { text-align: center; margin-bottom: 10px; }
+.main-logo { max-width: 60px; height: auto; filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.5)); }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+.header { text-align: center; margin-bottom: 40px; }
+.header h1 { 
+    color: #fff; 
+    font-weight: 700; 
+    letter-spacing: 2px; 
+    text-transform: uppercase; 
+    margin-top: 10px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
 
-        .card {
-            background: var(--card-bg); border-radius: 12px; padding: 25px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05); transition: transform 0.3s ease;
-            display: flex; flex-direction: column;
-        }
-        .card:hover { transform: translateY(-5px); }
-        .card h2 { font-size: 1.1rem; color: var(--primary-color); margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
 
-        .content-box {
-            font-size: 0.85rem; color: #666; margin: 15px 0; background: #f9f9f9;
-            padding: 12px; border-radius: 8px; border-left: 4px solid var(--accent-color);
-            min-height: 45px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
-        }
+/* Dark Card Styling */
+.card {
+    background: var(--card-bg); 
+    border-radius: 16px; 
+    padding: 25px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3); 
+    transition: all 0.3s ease;
+    display: flex; flex-direction: column;
+}
+.card:hover { 
+    transform: translateY(-5px); 
+    border-color: var(--accent-color);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+}
 
-        .btn {
-            background-color: var(--accent-color); color: white; border: none; padding: 12px;
-            border-radius: 6px; cursor: pointer; font-weight: 600; display: flex;
-            align-items: center; justify-content: center; gap: 8px; transition: 0.3s; width: 100%; margin-top: auto;
-        }
-        .btn:hover { opacity: 0.9; }
+.card h2 { 
+    font-size: 1.1rem; 
+    color: #fff; 
+    margin-top: 0; 
+    border-bottom: 1px solid var(--border-color); 
+    padding-bottom: 15px; 
+    display: flex; align-items: center; gap: 10px; 
+}
+.card h2 i { color: var(--accent-color); }
+
+.content-box {
+    font-size: 0.85rem; 
+    color: var(--text-muted); 
+    margin: 15px 0; 
+    background: #0f172a; /* Darker box inside card */
+    padding: 15px; 
+    border-radius: 10px; 
+    border-left: 4px solid var(--accent-color);
+    min-height: 45px;
+}
+
+/* Updated Inputs for Main Page */
+.converter-input { 
+    width: 100%; 
+    padding: 12px; 
+    margin-bottom: 15px; 
+    background: #0f172a;
+    border: 1px solid var(--border-color); 
+    border-radius: 8px; 
+    font-size: 13px; 
+    color: #fff;
+    box-sizing: border-box; 
+}
+.converter-input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+.btn {
+    background-color: var(--accent-color); color: white; border: none; padding: 12px;
+    border-radius: 8px; cursor: pointer; font-weight: 600; display: flex;
+    align-items: center; justify-content: center; gap: 8px; transition: 0.3s; width: 100%; margin-top: auto;
+}
+.btn:hover { filter: brightness(1.2); }
 
         .converter-input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; box-sizing: border-box; }
 
@@ -125,12 +176,41 @@
 			border: 1px solid #444;
 			box-shadow: 0 0 30px rgba(0,0,0,0.5);
 			}
+			.top-right-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: #334155; /* Slate color to match theme */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--border-color);
+    transition: 0.3s;
+    z-index: 100;
+}
+
+.top-right-btn:hover {
+    background-color: var(--accent-color);
+    transform: translateY(-2px);
+}
+
+/* Ensure container handles relative positioning */
+.container { position: relative; }
 
     </style>
 </head>
 <body>
 
 <div class="container">
+    <a href="https://ripbook.github.io/contentHelp/" class="top-right-btn">
+        <i class="fas fa-arrow-left"></i> Switch to Previous Version
+    </a>
     <div class="logo-container">
         <img src="https://ripbook.github.io/contentHelp/ripbook_logo.png" alt="RIPBOOK Logo" class="main-logo">
     </div>
@@ -187,37 +267,45 @@
     </div>
 </div>
 <div id="priceModal" class="modal">
-    <div class="editor-content" style="width: 95%; max-width: 900px; background: #fff; color: #333; padding: 20px; border-radius: 15px;">
-        <button class="close-btn" onclick="closeModal('priceModal')" style="top: 10px; right: 10px;">CLOSE ✕</button>
-        <h2 style="color: #2c3e50; text-align: left; margin-top: 0;">
-            <i class="fas fa-file-invoice"></i> Price Details
-        </h2>
-        <hr style="border: 0; border-top: 1px solid #eee; margin-bottom: 20px;">
+    <div class="editor-content" style="width: 95%; max-width: 900px; background: #1e293b; color: #fff; padding: 30px; border-radius: 20px; border: 1px solid #334155;">
+        <button class="close-btn" onclick="closeModal('priceModal')" style="top: 20px; right: 20px;">CLOSE ✕</button>
         
-        <div id="sheet-loading" style="text-align: center; padding: 40px; font-weight: 600; color: #666;">
-            <i class="fas fa-spinner fa-spin fa-2x"></i><br>Loading...
+        <h2 style="color: #fff; text-align: left; margin: 0; font-weight: 700; display: flex; align-items: center; gap: 12px;">
+            <i class="fas fa-file-invoice" style="color: #3b82f6;"></i> RIPBOOK Price Details
+        </h2>
+        <p style="color: #94a3b8; font-size: 14px; margin-bottom: 20px; margin-top: 5px;">copy pricing packages.</p>
+        
+        <hr style="border: 0; border-top: 1px solid #334155; margin-bottom: 25px;">
+        
+        <div id="sheet-loading" style="text-align: center; padding: 60px; font-weight: 600; color: #94a3b8;">
+            <i class="fas fa-circle-notch fa-spin fa-3x" style="color: #3b82f6; margin-bottom: 15px;"></i><br>
+            Fetching latest prices...
         </div>
 
-        <div style="max-height: 500px; overflow-y: auto;">
-            <table id="content-table" style="width: 100%; border-collapse: collapse; display: none;">
+        <div style="max-height: 550px; overflow-y: auto; border-radius: 10px; border: 1px solid #334155;">
+            <table id="content-table" style="width: 100%; border-collapse: collapse; display: none; background: #1e293b;">
                 <thead>
-					<tr style="background: #f8f9fa; position: sticky; top: 0;">
-					<th style="padding: 12px; border: 1px solid #ddd; width: 50px;">No</th>
-					<th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Title</th>
-					<th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Preview Content</th>
-					<th style="padding: 12px; border: 1px solid #ddd; width: 100px;">Action</th>
-					</tr>
-				</thead>
-                <tbody id="sheet-data-body"></tbody>
+                    <tr style="background: #2d3748; position: sticky; top: 0; z-index: 10;">
+                        <th style="padding: 15px; border-bottom: 2px solid #334155; width: 50px; color: #63b3ed; font-size: 12px; text-transform: uppercase;">No</th>
+                        <th style="padding: 15px; border-bottom: 2px solid #334155; text-align: left; color: #63b3ed; font-size: 12px; text-transform: uppercase;">Service Title</th>
+                        <th style="padding: 15px; border-bottom: 2px solid #334155; text-align: left; color: #63b3ed; font-size: 12px; text-transform: uppercase;">Preview Content</th>
+                        <th style="padding: 15px; border-bottom: 2px solid #334155; width: 100px; color: #63b3ed; font-size: 12px; text-transform: uppercase;">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="sheet-data-body">
+                    </tbody>
             </table>
         </div>
     </div>
 </div>
 <div id="thumbModal" class="modal">
-    <div class="editor-content">
+    <div class="editor-content" style="width: 1320px; background: #1e293b; color: #fff; padding: 30px; border-radius: 20px;">
         <button class="close-btn" onclick="closeModal('thumbModal')">CLOSE ✕</button>
-        <h2>Live Thumbnail Designer (1280x720)</h2>
-        <div id="canvas-container">
+        
+        <h2 style="color: #fff; font-weight: 700; margin-bottom: 5px;">Live Thumbnail Designer</h2>
+        <p style="color: #94a3b8; font-size: 14px; margin-bottom: 20px;">Standard Resolution (1280x720)</p>
+
+        <div id="canvas-container" style="border: 2px solid #334155; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
             <div id="photo-window"><div id="photo-display"></div></div>
             <div id="background-layer"></div>
             
@@ -225,85 +313,137 @@
             <div id="date-box" class="draggable-text" contenteditable="true" style="top:435px; left:515px; width:300px; font-size:32px;">02-02-2026</div>
             <div id="time-box" class="draggable-text" contenteditable="true" style="top:435px; left:874px; width:300px; font-size:32px;">- 08:30 AM -</div>
         </div>
-        <div class="ui-panel">
-            <div class="input-group"><label>Upload Photo</label><input type="file" id="thumb-upload"></div>
-            <div class="input-group"><label>Photo Zoom</label><input type="range" id="zoom-photo" min="100" max="400" value="100"></div>
-            <div class="input-group"><label>Name Font Size</label><input type="range" id="size-name" min="10" max="100" value="38"></div>
-            <div class="input-group"><label>Date</label><input type="date" id="input-date"></div>
-            <div class="input-group"><label>Time</label><input type="time" id="input-time"></div>
-            <button onclick="resetTextPositions()" style="background:#c0392b; color:white; border:none; padding:10px; cursor:pointer; font-weight:bold; border-radius:5px;">RESET POSITIONS</button>
-            <button onclick="downloadThumbnail()" style="grid-column: span 3; background:#27ae60; color:white; border:none; padding:15px; cursor:pointer; font-size:18px; font-weight:bold; border-radius:5px; margin-top:10px;">DOWNLOAD FINAL THUMBNAIL</button>
+
+        <div class="ui-panel" style="background: #2d3748; width: 950px; border: 1px solid #334155; padding: 25px;">
+            <div class="input-group" style="background: #1e293b; border: 1px solid #334155;">
+                <label style="color: #63b3ed;">Upload Photo</label>
+                <input type="file" id="thumb-upload" style="color: #fff;">
+            </div>
+            
+            <div class="input-group" style="background: #1e293b; border: 1px solid #334155;">
+                <label style="color: #63b3ed;">Photo Zoom</label>
+                <input type="range" id="zoom-photo" min="100" max="400" value="100" style="accent-color: #3b82f6;">
+            </div>
+            
+            <div class="input-group" style="background: #1e293b; border: 1px solid #334155;">
+                <label style="color: #63b3ed;">Name Font Size</label>
+                <input type="range" id="size-name" min="10" max="100" value="38" style="accent-color: #3b82f6;">
+            </div>
+            
+            <div class="input-group" style="background: #1e293b; border: 1px solid #334155;">
+                <label style="color: #63b3ed;">Date</label>
+                <input type="date" id="input-date" style="background: #2d3748; color: #fff; border: 1px solid #4a5568;">
+            </div>
+            
+            <div class="input-group" style="background: #1e293b; border: 1px solid #334155;">
+                <label style="color: #63b3ed;">Time</label>
+                <input type="time" id="input-time" style="background: #2d3748; color: #fff; border: 1px solid #4a5568;">
+            </div>
+
+            <button onclick="resetTextPositions()" style="background:#e53e3e; color:white; border:none; padding:10px; cursor:pointer; font-weight:bold; border-radius:5px; height: 100%;">
+                <i class="fas fa-undo"></i> RESET POSITIONS
+            </button>
+
+            <button onclick="downloadThumbnail()" style="grid-column: span 3; background:#27ae60; color:white; border:none; padding:18px; cursor:pointer; font-size:18px; font-weight:bold; border-radius:8px; margin-top:10px; box-shadow: 0 4px 14px rgba(0,0,0,0.3);">
+                <i class="fas fa-download"></i> DOWNLOAD FINAL THUMBNAIL
+            </button>
         </div>
     </div>
 </div>
 
 <div id="cropModal" class="modal">
-    <div class="editor-content">
+    <div class="editor-content" style="width: 900px; background: #1e293b; padding: 40px;">
         <button class="close-btn" onclick="closeModal('cropModal')">CLOSE ✕</button>
-        <h2>RIPBOOK PHOTO CROPPER(246x266)</h2>
-        <div class="crop-canvas-area">
-            <canvas id="cropCanvas" width="246" height="266"></canvas>
-        </div>
-        <div class="wm-toggle-bar">
-            <button id="btnGrey" class="wm-opt active">Grey Watermark</button>
-            <button id="btnWhite" class="wm-opt">White Watermark</button>
-        </div>
-        <div class="ui-panel" style="width: 500px; grid-template-columns: 1fr;">
-            <div class="input-group"><label>1. Upload Portrait</label><input type="file" id="crop-upload"></div>
-            <button class="btn" style="background-color: #27ae60; padding:15px; font-size: 16px;" onclick="saveBothFiles()">
-                <i class="fas fa-download"></i> SAVE BOTH (CLEAN + WATERMARKED)
-            </button>
+        
+        <h2 style="margin: 0 0 5px 0; font-weight: 700; color: #fff;">Photo Cropper with BG Remover</h2>
+        <p style="color: #94a3b8; font-size: 14px; margin-bottom: 30px;">RMC Memorial page(246x266)</p>
+
+        <div style="display: flex; gap: 40px; align-items: flex-start; justify-content: center; width: 100%;">
+            <div style="flex: 0 0 auto;">
+                <div class="crop-canvas-area" style="border: 3px solid #334155; border-radius: 12px; overflow: hidden; background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                    <canvas id="cropCanvas" width="246" height="266"></canvas>
+                </div>
+                <button class="btn" style="background: #27ae60; width: 100%; margin-top: 20px; padding: 18px; font-size: 16px;" onclick="saveBothFiles()">
+                    <i class="fas fa-download"></i> SAVE BOTH VERSIONS
+                </button>
+            </div>
+
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 20px;">
+                <div class="input-group" style="background: #2d3748; padding: 15px; border-radius: 8px;">
+                    <label style="color: #63b3ed; font-weight: bold;">1. Select Image</label>
+                    <button class="btn" style="background: #3b82f6; margin-top: 5px;" onclick="document.getElementById('crop-upload').click()">
+                        <i class="fas fa-image"></i> Choose File
+                    </button>
+                    <input type="file" id="crop-upload" accept="image/*" style="display:none;">
+                </div>
+
+                <div class="input-group" style="background: #2d3748; padding: 15px; border-radius: 8px;">
+                    <label style="color: #63b3ed; font-weight: bold;">2. Image Zoom</label>
+                    <input type="range" id="zoomSlider" style="width: 100%; margin-top: 10px; accent-color: #3b82f6;" min="0.1" max="4" step="0.01" value="1">
+                </div>
+
+                <div class="input-group" style="background: #2d3748; padding: 15px; border-radius: 8px;">
+                    <label style="color: #63b3ed; font-weight: bold;">3. The background is already removed. Click Original to keep it, or click Remove BG to remove the background.</label>
+                    <div class="wm-toggle-bar" style="width: 100%; margin-top: 10px; display: flex; gap: 10px;">
+                        <button class="wm-opt active" id="modeOriginal" onclick="handleOriginal()" style="flex: 1;">Original</button>
+                        <button class="wm-opt" id="modeRemoveBG" onclick="processRemoveBG()" style="flex: 1;">Remove BG</button>
+                    </div>
+                    <div id="bgColorControls" class="wm-toggle-bar" style="display: none; width: 100%; margin-top: 10px; gap: 10px;">
+						<button id="btnBgWhite" class="wm-opt" onclick="changeBg('#ffffff', 'btnBgWhite')" style="background: white; color: black; flex: 1;">White BG</button>
+						<button id="btnBgGrey" class="wm-opt" onclick="changeBg('#808080', 'btnBgGrey')" style="background: #808080; color: white; flex: 1;">Grey BG</button>
+					</div>
+                </div>
+
+                <div class="input-group" style="background: #2d3748; padding: 15px; border-radius: 8px;">
+					<label style="color: #63b3ed; font-weight: bold;">4. Add RIPBOOK Logo</label>
+					<div class="wm-toggle-bar" style="width: 100%; margin-top: 10px; display: flex; gap: 10px;">
+					<button id="btnWhiteLogo" class="wm-opt" onclick="addWM(logoWhite, 'btnWhiteLogo')" style="flex: 1;">White Logo</button>
+					<button id="btnGreyLogo" class="wm-opt active" onclick="addWM(logoGrey, 'btnGreyLogo')" style="flex: 1;">Grey Logo</button>
+				</div>
+			</div>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyTIgBYIHbW9yEi88m-rlLW8db7qgnF97IIMjE4ll-NkKQ-ROThIUrjOLAGSc4tM7A/exec';
-
 async function loadSheetData() {
     const tableBody = document.getElementById('sheet-data-body');
     const table = document.getElementById('content-table');
     const loader = document.getElementById('sheet-loading');
+    const modalTarget = document.getElementById('priceModal');
 
-    // Show loader only if the table is currently empty
     if (tableBody.innerHTML === '') {
         loader.style.display = 'block';
         table.style.display = 'none';
     }
 
     try {
-        // Fetch data from your Google Apps Script Web App
         const response = await fetch(WEB_APP_URL);
         if (!response.ok) throw new Error('Network response was not ok');
-        
         const data = await response.json();
-        
-        // Clear existing rows to prevent duplicates on refresh
         tableBody.innerHTML = ''; 
 
         data.forEach(item => {
-            // 1. Prepare Full Content: Keep line breaks (\n) for alignment
-            // We only escape backticks to prevent JavaScript template literal errors
             const fullContent = String(item.content).replace(/`/g, "\\`").trim();
-
-            // 2. Prepare Preview: Convert line breaks to spaces so the table stays neat
             const previewText = fullContent.replace(/\n/g, " ");
-            const shortPreview = previewText.length > 60 ? previewText.substring(0, 60) + "..." : previewText;
+            const shortPreview = previewText.length > 65 ? previewText.substring(0, 65) + "..." : previewText;
 
-            // 3. Create the Row with 3 data columns + 1 Action column
             const tr = document.createElement('tr');
+            tr.style.borderBottom = "1px solid #334155";
             tr.innerHTML = `
-                <td style="padding: 12px; border: 1px solid #ddd; text-align:center; font-size:12px; color:#888;">
+                <td style="padding: 15px; text-align:center; font-size:12px; color:#64748b;">
                     ${item.no || ''}
                 </td>
-                <td style="padding: 12px; border: 1px solid #ddd; font-weight: 600; color:#2c3e50;">
+                <td style="padding: 15px; font-weight: 600; color:#f8fafc;">
                     ${item.title || ''}
                 </td>
-                <td style="padding: 12px; border: 1px solid #ddd; color: #666; font-size: 13px; background: #fafafa; max-width: 300px;">
+                <td style="padding: 15px; color: #94a3b8; font-size: 13px; max-width: 300px; line-height: 1.5;">
                     ${shortPreview}
                 </td>
-                <td style="padding: 12px; border: 1px solid #ddd; text-align: center;">
-                    <button class="btn" style="padding: 8px 15px; font-size: 12px; background:#3498db; width: auto; border-radius:4px;" 
+                <td style="padding: 15px; text-align: center;">
+                    <button class="btn" style="padding: 8px 18px; font-size: 12px; background:#3b82f6; width: auto; border-radius:6px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" 
                             onclick="copyDirectText(\`${fullContent}\`)">
                         <i class="far fa-copy"></i> COPY
                     </button>
@@ -312,20 +452,43 @@ async function loadSheetData() {
             tableBody.appendChild(tr);
         });
 
-        // Hide loader and show the populated table
         loader.style.display = 'none';
         table.style.display = 'table';
-        console.log("Database updated from Google Sheets.");
 
     } catch (error) {
-        console.error("Load Error:", error);
         loader.innerHTML = `
-            <div style="color:red; padding:20px;">
-                <i class="fas fa-exclamation-circle"></i><br>
-                <b>Connection Failed</b><br>
-                <small>Check if your Google Script is deployed to 'Anyone'.</small>
+            <div style="color:#ef4444; padding:20px;">
+                <i class="fas fa-exclamation-triangle fa-2x"></i><br>
+                <b style="display:block; margin-top:10px;">Connection Failed</b>
+                <small style="color: #94a3b8;">Please refresh or check internet connection.</small>
             </div>`;
     }
+}
+
+function copyDirectText(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select();
+    
+    try {
+        document.execCommand('copy');
+        Swal.fire({
+            icon: 'success',
+            title: 'Content Copied!',
+            text: 'Text formatting preserved.',
+            timer: 1500,
+            showConfirmButton: false,
+            toast: true,
+            position: 'center',
+            background: '#2d3748',
+            color: '#fff',
+            target: document.getElementById('priceModal') // Keeps notification inside the modal
+        });
+    } catch (err) {
+        console.error('Unable to copy', err);
+    }
+    document.body.removeChild(textArea);
 }
 
 function copyDirectText(text) {
@@ -374,7 +537,7 @@ function copyText(id, msg) {
     navigator.clipboard.writeText(txt).then(() => {
         Swal.fire({
             icon: 'success', title: msg, text: txt, timer: 1500, showConfirmButton: false,
-            position: 'center', width: '300px', background: '#fff', color: '#000',
+            position: 'center', width: '300px', background: '#1e293b', color: '#fff',
             customClass: { container: 'high-z-index' }
         });
     });
@@ -406,50 +569,236 @@ function copyText(id, msg) {
     }
 
     // Fabric.js Cropper Logic
-    const cropCanvas = new fabric.Canvas('cropCanvas', { preserveObjectStacking: true });
-    const logoGrey = 'https://eaglenithu.github.io/ripbookcontenthelp/RIP_Watermark1.png';
-    const logoWhite = 'https://eaglenithu.github.io/ripbookcontenthelp/RIP_Watermark2.png';
-    let activeWM = null, uploadedCropImg = null;
+const API_KEY = 'L2xu4AAH8TdMtRWJAEGQRWHP';
+const cropCanvas = new fabric.Canvas('cropCanvas', { preserveObjectStacking: true });
+const logoGrey = 'https://eaglenithu.github.io/ripbookcontenthelp/RIP_Watermark1.png';
+const logoWhite = 'https://eaglenithu.github.io/ripbookcontenthelp/RIP_Watermark2.png';
 
-    document.getElementById('crop-upload').onchange = function(e) {
-        const reader = new FileReader();
-        reader.onload = function(f) {
-            fabric.Image.fromURL(f.target.result, function(img) {
-                if(uploadedCropImg) cropCanvas.remove(uploadedCropImg);
-                uploadedCropImg = img;
-                img.scaleToWidth(246);
-                cropCanvas.add(img).sendToBack(img);
-                cropCanvas.centerObject(img);
-                if(!activeWM) addWM(logoGrey);
-                cropCanvas.setActiveObject(img).renderAll();
-            });
-        };
-        reader.readAsDataURL(e.target.files[0]);
+let uploadedCropImg = null;
+let activeWM = null;
+let baseScale = 1;
+
+document.getElementById('crop-upload').onchange = function(e) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        fabric.Image.fromURL(event.target.result, function(img) {
+            setupCropImage(img);
+        });
     };
+    reader.readAsDataURL(e.target.files[0]);
+};
 
-    function addWM(url) {
-        let p = activeWM ? { left: activeWM.left, top: activeWM.top, scaleX: activeWM.scaleX, scaleY: activeWM.scaleY } : { left: 50, top: 150, scaleX: 0.04, scaleY: 0.04 };
-        if (activeWM) cropCanvas.remove(activeWM);
+function setupCropImage(img) {
+    if(uploadedCropImg) cropCanvas.remove(uploadedCropImg);
+    
+    // Calculate scale to fit width
+    baseScale = 246 / img.width;
+    
+    img.set({
+        originX: 'center',  // Set origin to center for center-based zooming
+        originY: 'center',
+        centeredScaling: true
+    });
+
+    img.scale(baseScale);
+    cropCanvas.add(img);
+    
+    // Position the center of the image at the center of the canvas
+    img.set({
+        left: cropCanvas.width / 2,
+        top: cropCanvas.height / 2
+    });
+
+    img.sendToBack(); 
+    cropCanvas.setActiveObject(img);
+    uploadedCropImg = img;
+    
+    if(activeWM) activeWM.bringToFront();
+    
+    document.getElementById('zoomSlider').value = 1;
+    cropCanvas.renderAll();
+}
+
+// Updated Center Zoom Logic
+document.getElementById('zoomSlider').oninput = function() {
+    if (!uploadedCropImg) return;
+    const zoomVal = parseFloat(this.value);
+    
+    // Zoom from center
+    uploadedCropImg.scale(baseScale * zoomVal);
+    
+    // Ensure image remains centered after scale change
+    uploadedCropImg.set({
+        left: cropCanvas.width / 2,
+        top: cropCanvas.height / 2
+    });
+    
+    cropCanvas.renderAll();
+};
+
+function handleOriginal() {
+    document.getElementById('modeOriginal').classList.add('active');
+    document.getElementById('modeRemoveBG').classList.remove('active');
+    document.getElementById('bgColorControls').style.display = 'none';
+    
+    // Clear background button highlights
+    document.getElementById('btnBgWhite').classList.remove('active');
+    document.getElementById('btnBgGrey').classList.remove('active');
+    
+    cropCanvas.setBackgroundColor(null, cropCanvas.renderAll.bind(cropCanvas));
+}
+
+async function processRemoveBG() {
+    const fileInput = document.getElementById('crop-upload');
+    const modalTarget = document.getElementById('cropModal'); // The target element
+
+    if (!fileInput.files[0]) {
+        Swal.fire({ 
+            icon: 'warning', 
+            title: 'Upload Photo', 
+            text: 'Please select a photo first.', 
+            background: '#1e293b', 
+            color: '#fff',
+            target: modalTarget // Forces alert inside modal
+        });
+        return;
+    }
+
+    document.getElementById('modeRemoveBG').classList.add('active');
+    document.getElementById('modeOriginal').classList.remove('active');
+
+    // --- LOADING ACTION (INSIDE MODAL) ---
+    Swal.fire({
+        target: modalTarget, // CRITICAL: This keeps the loader inside the modal
+        title: 'Removing Background',
+        html: `
+            <div style="margin-top: 20px;">
+                <i class="fas fa-spinner fa-spin fa-3x" style="color: #3b82f6;"></i>
+                <p style="margin-top: 20px; color: #94a3b8;">BG remover is processing...<br>Please wait.</p>
+            </div>
+        `,
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        background: '#1e293b',
+        color: '#fff',
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    const formData = new FormData();
+    formData.append('image_file', fileInput.files[0]);
+    formData.append('size', 'auto');
+
+    try {
+        const response = await fetch('https://api.remove.bg/v1.0/removebg', {
+            method: 'POST',
+            headers: { 'X-Api-Key': API_KEY },
+            body: formData
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.errors[0].title || 'API Error');
+        }
+
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+
         fabric.Image.fromURL(url, function(img) {
-            img.set({ ...p, cornerColor: '#3498db', cornerSize: 8 });
-            activeWM = img; cropCanvas.add(img).bringToFront(img).renderAll();
-        }, { crossOrigin: 'anonymous' });
+            setupCropImage(img);
+            document.getElementById('bgColorControls').style.display = 'flex';
+            
+            // Close the loading alert inside the modal
+            Swal.close();
+            
+            // SUCCESS TOAST (INSIDE MODAL)
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
+                background: '#1e293b',
+                color: '#fff',
+                target: modalTarget // Keeps toast inside modal
+            });
+            Toast.fire({ icon: 'success', title: 'Background Removed' });
+        });
+
+    } catch (error) {
+        console.error("BG Remove Error:", error);
+        Swal.fire({ 
+            icon: 'error', 
+            title: 'Process Failed', 
+            text: error.message, 
+            background: '#1e293b', 
+            color: '#fff',
+            target: modalTarget // Keeps error alert inside modal
+        });
+    }
+}
+
+function changeBg(color, clickedBtnId) {
+    // 1. Remove active class from all background buttons
+    document.getElementById('btnBgWhite').classList.remove('active');
+    document.getElementById('btnBgGrey').classList.remove('active');
+    
+    // 2. Add active class to the clicked button
+    if(clickedBtnId) {
+        document.getElementById(clickedBtnId).classList.add('active');
     }
 
-    document.getElementById('btnGrey').onclick = function() { addWM(logoGrey); this.classList.add('active'); document.getElementById('btnWhite').classList.remove('active'); };
-    document.getElementById('btnWhite').onclick = function() { addWM(logoWhite); this.classList.add('active'); document.getElementById('btnGrey').classList.remove('active'); };
+    // 3. Apply color to the canvas
+    cropCanvas.setBackgroundColor(color, cropCanvas.renderAll.bind(cropCanvas));
+}
 
-    function saveBothFiles() {
-        if(!uploadedCropImg) return Swal.fire('Error', 'Upload photo first', 'warning');
-        cropCanvas.discardActiveObject().renderAll();
-        const a1 = document.createElement('a'); a1.download = 'ripbook_watermarked.png'; a1.href = cropCanvas.toDataURL(); a1.click();
+function addWM(url, clickedBtnId) {
+    if(!uploadedCropImg) return;
+
+    // 1. Manage Button Colors (Toggle 'active' class)
+    // Remove active class from both logo buttons
+    document.getElementById('btnWhiteLogo').classList.remove('active');
+    document.getElementById('btnGreyLogo').classList.remove('active');
+    
+    // Add active class to the one just clicked
+    if(clickedBtnId) {
+        document.getElementById(clickedBtnId).classList.add('active');
+    }
+
+    // 2. Logic for adding/swapping the logo on canvas
+    fabric.Image.fromURL(url, function(img) {
+        if(activeWM) cropCanvas.remove(activeWM);
+        img.scale(0.038); 
+        img.set({ left: 45, top: 135 });
+        cropCanvas.add(img);
+        img.bringToFront(); 
+        activeWM = img;
+        cropCanvas.renderAll();
+    }, { crossOrigin: 'anonymous' });
+}	
+function saveBothFiles() {
+    if(!uploadedCropImg) return;
+    cropCanvas.discardActiveObject().renderAll();
+    
+    const link = document.createElement('a');
+    link.download = 'ripbook_watermarked.png';
+    link.href = cropCanvas.toDataURL({ format: 'png' });
+    link.click();
+
+    if(activeWM) {
+        activeWM.set({ opacity: 0 });
+        cropCanvas.renderAll();
         setTimeout(() => {
-            activeWM.visible = false; cropCanvas.renderAll();
-            const a2 = document.createElement('a'); a2.download = 'ripbook_clean.png'; a2.href = cropCanvas.toDataURL(); a2.click();
-            activeWM.visible = true; cropCanvas.renderAll();
-            Swal.fire('Success', 'Both versions saved!', 'success');
-        }, 800);
+            link.download = 'ripbook_clean.png';
+            link.href = cropCanvas.toDataURL({ format: 'png' });
+            link.click();
+            activeWM.set({ opacity: 1 });
+            cropCanvas.renderAll();
+            Swal.fire({ icon: 'success', title: 'Saved!', background: '#1e293b', color: '#fff', timer: 1000 });
+        }, 500);
     }
+}
+	
 
     // Thumbnail Designer Logic
     const thumbDisplay = document.getElementById('photo-display');
@@ -502,5 +851,3 @@ window.addEventListener('DOMContentLoaded', loadSheetData);
 
 </body>
 </html>
-
-
