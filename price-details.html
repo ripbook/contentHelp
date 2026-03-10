@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIPBOOK CONTENT HELP</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Mukta+Malar:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+:root {
+    --primary-color: #1e293b;
+    --accent-color: #3b82f6;
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
+    --text-color: #f8fafc;
+    --text-muted: #94a3b8;
+    --border-color: #334155;
+}
+body {
+    font-family: 'Poppins', 'Mukta Malar', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0; padding: 20px;
+    display: flex; justify-content: center;
+}
+.container { max-width: 1200px; width: 100%; position: relative; }
+.logo-container { text-align: center; margin-bottom: 10px; }
+.main-logo { max-width: 60px; height: auto; filter: drop-shadow(0 0 10px rgba(59,130,246,0.5)); }
+.header { text-align: center; margin-bottom: 30px; }
+.header h1 {
+    color: #fff; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; margin-top: 10px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+.back-btn {
+    position: absolute; top: 0; right: 0;
+    background-color: #334155; color: white; padding: 10px 20px;
+    border-radius: 8px; text-decoration: none; font-size: 14px;
+    font-weight: 600; display: flex; align-items: center; gap: 8px;
+    border: 1px solid var(--border-color); transition: 0.3s;
+}
+.back-btn:hover { background-color: var(--accent-color); transform: translateY(-2px); }
+.table-card {
+    background: var(--card-bg); border-radius: 16px; padding: 25px;
+    border: 1px solid var(--border-color); box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+.table-card h2 {
+    font-size: 1.1rem; color: #fff; margin-top: 0;
+    border-bottom: 1px solid var(--border-color); padding-bottom: 15px;
+    display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
+}
+.table-card h2 i { color: var(--accent-color); }
+.table-card p { color: var(--text-muted); font-size: 13px; margin-bottom: 20px; }
+.table-wrap { max-height: 550px; overflow-y: auto; border-radius: 10px; border: 1px solid var(--border-color); }
+table { width: 100%; border-collapse: collapse; background: var(--card-bg); }
+thead tr { background: #2d3748; position: sticky; top: 0; z-index: 10; }
+th { padding: 15px; border-bottom: 2px solid var(--border-color); color: #63b3ed; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; text-align: left; }
+th:first-child { width: 50px; text-align: center; }
+th:last-child { width: 100px; text-align: center; }
+tbody tr { border-bottom: 1px solid var(--border-color); transition: background 0.2s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: #0f172a; }
+td { padding: 15px; font-size: 13px; }
+td:first-child { text-align: center; color: var(--text-muted); font-size: 12px; }
+td:last-child { text-align: center; }
+.title-td { font-weight: 600; color: #f8fafc; }
+.preview-td { color: var(--text-muted); max-width: 300px; line-height: 1.5; }
+.btn-copy {
+    background: #3b82f6; color: white; border: none; padding: 8px 18px;
+    border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px;
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: 'Poppins', sans-serif; transition: 0.2s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.btn-copy:hover { filter: brightness(1.2); }
+#sheet-loading { text-align: center; padding: 60px; font-weight: 600; color: var(--text-muted); }
+#sheet-loading i { color: var(--accent-color); margin-bottom: 15px; }
+</style>
+</head>
+<body>
+<div class="container">
+    <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Home</a>
+    <div class="logo-container">
+        <img src="https://ripbook.github.io/contentHelp/ripbook_logo.png" alt="RIPBOOK Logo" class="main-logo">
+    </div>
+    <div class="header"><h1>RIPBOOK CONTENT HELP</h1></div>
+
+    <div class="table-card">
+        <h2><i class="fas fa-file-invoice"></i> RIPBOOK Price Details</h2>
+        <p>Copy pricing packages.</p>
+        <div class="table-wrap">
+            <div id="sheet-loading">
+                <i class="fas fa-circle-notch fa-spin fa-3x" style="display:block;margin-bottom:15px;"></i>
+                Fetching latest prices...
+            </div>
+            <table id="content-table" style="display:none;">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Service Title</th>
+                        <th>Preview Content</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="sheet-data-body"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyTIgBYIHbW9yEi88m-rlLW8db7qgnF97IIMjE4ll-NkKQ-ROThIUrjOLAGSc4tM7A/exec';
+
+async function loadSheetData() {
+    const tableBody = document.getElementById('sheet-data-body');
+    const table = document.getElementById('content-table');
+    const loader = document.getElementById('sheet-loading');
+    try {
+        const response = await fetch(WEB_APP_URL);
+        if(!response.ok) throw new Error('Network error');
+        const data = await response.json();
+        tableBody.innerHTML = '';
+        data.forEach(item => {
+            const fullContent = String(item.content).replace(/`/g,"\\`").trim();
+            const previewText = fullContent.replace(/\n/g," ");
+            const shortPreview = previewText.length > 65 ? previewText.substring(0,65) + "..." : previewText;
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${item.no || ''}</td>
+                <td class="title-td">${item.title || ''}</td>
+                <td class="preview-td">${shortPreview}</td>
+                <td><button class="btn-copy" onclick="copyDirectText(\`${fullContent}\`)"><i class="far fa-copy"></i> COPY</button></td>
+            `;
+            tableBody.appendChild(tr);
+        });
+        loader.style.display = 'none';
+        table.style.display = 'table';
+    } catch(error) {
+        loader.innerHTML = `<div style="color:#ef4444;"><i class="fas fa-exclamation-triangle fa-2x"></i><br><b style="display:block;margin-top:10px;">Connection Failed</b><small style="color:#94a3b8;">Please refresh or check internet connection.</small></div>`;
+    }
+}
+
+function copyDirectText(text) {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+        document.execCommand('copy');
+        Swal.fire({ icon:'success', title:'Copied!', text:'Price content copied.', timer:1200, showConfirmButton:false, toast:true, position:'center', background:'#1e293b', color:'#fff' });
+    } catch(err) { console.error('Copy failed', err); }
+    document.body.removeChild(ta);
+}
+
+loadSheetData();
+</script>
+</body>
+</html>

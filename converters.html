@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIPBOOK CONTENT HELP</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Mukta+Malar:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+:root {
+    --primary-color: #1e293b;
+    --accent-color: #3b82f6;
+    --bunny-color: #9b59b6;
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
+    --text-color: #f8fafc;
+    --text-muted: #94a3b8;
+    --border-color: #334155;
+}
+body {
+    font-family: 'Poppins', 'Mukta Malar', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0; padding: 20px;
+    display: flex; justify-content: center;
+}
+.container { max-width: 1200px; width: 100%; position: relative; }
+.logo-container { text-align: center; margin-bottom: 10px; }
+.main-logo { max-width: 60px; height: auto; filter: drop-shadow(0 0 10px rgba(59,130,246,0.5)); }
+.header { text-align: center; margin-bottom: 40px; }
+.header h1 {
+    color: #fff; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; margin-top: 10px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+.card {
+    background: var(--card-bg); border-radius: 16px; padding: 25px;
+    border: 1px solid var(--border-color); box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    transition: all 0.3s ease; display: flex; flex-direction: column;
+}
+.card:hover {
+    transform: translateY(-5px); border-color: var(--accent-color);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+}
+.card h2 {
+    font-size: 1.1rem; color: #fff; margin-top: 0;
+    border-bottom: 1px solid var(--border-color); padding-bottom: 15px;
+    display: flex; align-items: center; gap: 10px;
+}
+.card h2 i { color: var(--accent-color); }
+.converter-input {
+    width: 100%; padding: 12px; margin-bottom: 15px;
+    background: #0f172a; border: 1px solid var(--border-color);
+    border-radius: 8px; font-size: 13px; color: #fff; box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+.converter-input:focus { outline: none; border-color: var(--accent-color); }
+.converter-input::placeholder { color: var(--text-muted); }
+.btn {
+    background-color: var(--accent-color); color: white; border: none;
+    padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: 0.3s; width: 100%; margin-top: auto;
+    font-family: 'Poppins', 'Mukta Malar', sans-serif; font-size: 14px;
+}
+.btn:hover { filter: brightness(1.2); }
+.back-btn {
+    position: absolute; top: 0; right: 0;
+    background-color: #334155; color: white; padding: 10px 20px;
+    border-radius: 8px; text-decoration: none; font-size: 14px;
+    font-weight: 600; display: flex; align-items: center; gap: 8px;
+    border: 1px solid var(--border-color); transition: 0.3s;
+}
+.back-btn:hover { background-color: var(--accent-color); transform: translateY(-2px); }
+</style>
+</head>
+<body>
+<div class="container">
+    <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Home</a>
+    <div class="logo-container">
+        <img src="https://ripbook.github.io/contentHelp/ripbook_logo.png" alt="RIPBOOK Logo" class="main-logo">
+    </div>
+    <div class="header"><h1>RIPBOOK CONTENT HELP</h1></div>
+
+    <div class="grid">
+        <div class="card">
+            <h2><i class="fab fa-youtube"></i> YouTube Live Converter</h2>
+            <input type="text" id="inputLink" class="converter-input" placeholder="Paste YouTube /live/ link">
+            <button class="btn" style="background-color:#e74c3c;" onclick="convertYouTube()"><i class="fas fa-sync"></i> Convert Link</button>
+        </div>
+
+        <div class="card">
+            <h2><i class="fas fa-rabbit" style="color:var(--bunny-color);"></i> Bunny Video Converter</h2>
+            <input type="text" id="bunnyInput" class="converter-input" placeholder="Paste Bunny .m3u8 link">
+            <button class="btn" style="background-color:var(--bunny-color);" onclick="convertBunny()"><i class="fas fa-play-circle"></i> To MP4 Link</button>
+        </div>
+    </div>
+</div>
+<script>
+function convertYouTube() {
+    const val = document.getElementById('inputLink').value.trim();
+    if(!val) { Swal.fire({ icon:'error', title:'Error', text:'Please paste a YouTube Live link first', background:'#1e293b', color:'#fff' }); return; }
+    const m = val.match(/\/live\/([a-zA-Z0-9_-]+)/);
+    if(m) {
+        const link = 'https://www.youtube.com/watch?v=' + m[1];
+        navigator.clipboard.writeText(link).then(() => {
+            Swal.fire({ icon:'success', title:'Success', text:'Standard link copied!', background:'#1e293b', color:'#fff' });
+        });
+    } else {
+        Swal.fire({ icon:'error', title:'Error', text:'Invalid YouTube Live URL format', background:'#1e293b', color:'#fff' });
+    }
+}
+function convertBunny() {
+    const val = document.getElementById('bunnyInput').value.trim();
+    if(!val) { Swal.fire({ icon:'error', title:'Empty Field', text:'Please paste a Bunny .m3u8 link first.', background:'#1e293b', color:'#fff' }); return; }
+    if(val.includes('playlist.m3u8')) {
+        const mp4 = val.replace('playlist.m3u8','play_720p.mp4');
+        navigator.clipboard.writeText(mp4).then(() => {
+            Swal.fire({ icon:'success', title:'Converted!', text:'MP4 link copied to clipboard.', timer:2000, showConfirmButton:false, background:'#1e293b', color:'#fff' });
+        });
+    } else {
+        Swal.fire({ icon:'warning', title:'Invalid Link', text:'This is not a valid Bunny .m3u8 playlist.', background:'#1e293b', color:'#fff' });
+    }
+}
+</script>
+</body>
+</html>
