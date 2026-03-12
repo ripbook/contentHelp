@@ -301,7 +301,7 @@ body {
     </div>
     <div class="header">
         <h1>Time Converter</h1>
-        <p>Any country → Sri Lanka/India time</p>
+        <p>Any country → Sri Lanka/India time/GMT</p>
     </div>
 
     <div class="grid">
@@ -545,7 +545,7 @@ function calculate() {
     const diffStr = diffAbs % 60 > 0 ? `${diffSign}${Math.floor(diffAbs/60)}h ${diffAbs%60}m` : `${diffSign}${Math.floor(diffAbs/60)}h`;
     lastResultText = `Sri Lanka Time: ${slTime}\n${slDate}\n(SL is ${diffStr} from selected country · GMT +05:30)`;
     document.getElementById('resultBox').innerHTML = `
-        <div class="result-label">Sri Lanka Time</div>
+        <div class="result-label">Sri Lanka/India Time</div>
         <div class="result-flag">🇱🇰</div>
         <div class="result-time">${slTime}</div>
         <div class="result-date">${slDate}</div>
