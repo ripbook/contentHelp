@@ -7,6 +7,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Mukta+Malar:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Twemoji: renders emoji flags as images on ALL platforms including Windows -->
+<script src="https://cdn.jsdelivr.net/npm/twemoji@14.0.2/dist/twemoji.min.js" crossorigin="anonymous"></script>
 <style>
 :root {
     --primary-color: #1e293b;
@@ -25,6 +27,28 @@ body {
     padding: 20px;
     display: flex; justify-content: center;
 }
+
+/* Twemoji image sizing */
+img.emoji {
+    height: 1.2em;
+    width: 1.2em;
+    margin: 0 2px;
+    vertical-align: -0.15em;
+    display: inline-block;
+}
+/* Larger flags in result box */
+.result-flag img.emoji {
+    height: 1.8em;
+    width: 1.8em;
+    vertical-align: middle;
+}
+/* World clock flags */
+.clock-name img.emoji {
+    height: 1.1em;
+    width: 1.1em;
+    vertical-align: -0.1em;
+}
+
 .container { max-width: 1200px; width: 100%; position: relative; }
 .logo-container { text-align: center; margin-bottom: 10px; }
 .main-logo { max-width: 60px; height: auto; filter: drop-shadow(0 0 10px rgba(59,130,246,0.5)); }
@@ -130,7 +154,7 @@ body {
     align-items: center; justify-content: center; gap: 6px; text-align: center; flex: 1;
 }
 .result-label { font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
-.result-flag { font-size: 24px; }
+.result-flag { font-size: 24px; line-height: 1; }
 .result-time { font-size: 2.6rem; font-weight: 700; color: #fbbf24; letter-spacing: -1px; line-height: 1; }
 .result-date { font-size: 12px; color: var(--text-muted); }
 .result-offset { font-size: 11px; color: #fbbf24; opacity: 0.75; }
@@ -227,7 +251,6 @@ body {
     border-color: #818cf8;
     color: #fff;
 }
-/* Change Country Toggle Button */
 .change-country-btn {
     margin-left: 6px;
     background: rgba(16,185,129,0.12);
@@ -244,7 +267,6 @@ body {
     border-color: #34d399;
     color: #fff;
 }
-/* Alt Country Panel */
 .alt-country-panel {
     display: none;
     background: var(--bg-color);
@@ -270,7 +292,6 @@ body {
 .alt-dropdown.open { display: block; }
 .alt-dropdown::-webkit-scrollbar { width: 4px; }
 .alt-dropdown::-webkit-scrollbar-thumb { background: #1a3a2a; border-radius: 2px; }
-/* Alt Result Box */
 .alt-result-box {
     background: var(--card-bg);
     border: 1px solid rgba(16,185,129,0.2);
@@ -301,7 +322,7 @@ body {
     </div>
     <div class="header">
         <h1>Time Converter</h1>
-        <p>Any country → Sri Lanka/India time/GMT</p>
+        <p>Any country → Sri Lanka/India time</p>
     </div>
 
     <div class="grid">
@@ -383,6 +404,17 @@ body {
 </div>
 
 <script>
+// ── Twemoji helper: parse any element so flags show as images everywhere ──
+function applyTwemoji(el) {
+    if (typeof twemoji !== 'undefined') {
+        twemoji.parse(el, {
+            folder: 'svg',
+            ext: '.svg',
+            base: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/'
+        });
+    }
+}
+
 const COUNTRIES = [
   { name:"🇬🇧 United Kingdom",        tz:"Europe/London",                    hasDST:true  },
   { name:"🇩🇪 Germany",               tz:"Europe/Berlin",                    hasDST:true  },
@@ -501,6 +533,8 @@ function renderDropdown(items) {
             <span>${c.name}</span><span class="tz-offset">${off}${c.hasDST?' · DST':''}</span>
         </div>`;
     }).join('');
+    // Apply Twemoji to the dropdown after rendering
+    applyTwemoji(dd);
     dd.querySelectorAll('.d-item').forEach(el => {
         el.addEventListener('mousedown', e => { e.preventDefault(); pickCountry(COUNTRIES.find(c => c.tz === el.dataset.tz)); });
     });
@@ -521,6 +555,8 @@ function pickCountry(country) {
     const dstPill = document.getElementById('tagDST');
     if (country.hasDST && isDST(country.tz, now)) { dstPill.style.display = 'inline'; dstPill.textContent = 'DST ON'; }
     else { dstPill.style.display = 'none'; }
+    // Apply Twemoji to selected tag
+    applyTwemoji(tag);
     document.getElementById('nowBtn').disabled = false;
     if (!document.getElementById('dateIn').value) {
         document.getElementById('dateIn').value = new Date().toLocaleDateString('en-CA', { timeZone: country.tz });
@@ -544,18 +580,20 @@ function calculate() {
     const diffSign = diff >= 0 ? '+' : '-'; const diffAbs = Math.abs(diff);
     const diffStr = diffAbs % 60 > 0 ? `${diffSign}${Math.floor(diffAbs/60)}h ${diffAbs%60}m` : `${diffSign}${Math.floor(diffAbs/60)}h`;
     lastResultText = `Sri Lanka Time: ${slTime}\n${slDate}\n(SL is ${diffStr} from selected country · GMT +05:30)`;
-    document.getElementById('resultBox').innerHTML = `
+
+    const resultBox = document.getElementById('resultBox');
+    resultBox.innerHTML = `
         <div class="result-label">Sri Lanka/India Time</div>
-        <div class="result-flag">🇱🇰</div>
+        <div class="result-flag">🇱🇰 🇮🇳</div>
         <div class="result-time">${slTime}</div>
         <div class="result-date">${slDate}</div>
         <div class="result-offset">SL is ${diffStr} from selected · GMT +05:30</div>
     `;
-    // Enable GMT toggle
+    // Apply Twemoji to result box so 🇱🇰 renders as image on PC
+    applyTwemoji(resultBox);
+
     document.getElementById('gmtToggleBtn').disabled = false;
-    // Update GMT box if visible
     if (gmtVisible) renderGMTBox();
-    // Update alt country box if visible
     if (altCountryVisible && altSelectedTZ) renderAltResult();
 
     const country = COUNTRIES.find(c => c.tz === selectedTZ);
@@ -598,20 +636,12 @@ function showPlaceholder(msg) { document.getElementById('resultBox').innerHTML =
 function toggle24HR() {
     is24HR = !is24HR;
     const btn = document.getElementById('hr24ToggleBtn');
-    if (is24HR) {
-        btn.classList.add('active');
-        btn.innerHTML = '<i class="fas fa-clock"></i> 24 HR';
-    } else {
-        btn.classList.remove('active');
-        btn.innerHTML = '<i class="fas fa-clock"></i> 24 HR';
-    }
-    // Re-render if we have a result
+    if (is24HR) { btn.classList.add('active'); } else { btn.classList.remove('active'); }
     if (utcRef) {
         calculate();
         if (gmtVisible) renderGMTBox();
     }
 }
-
 
 function setNow() {
     if (!selectedTZ) return;
@@ -642,7 +672,8 @@ function toggleClock24HR() {
 
 function renderClocks() {
     const now = new Date();
-    document.getElementById('clockGrid').innerHTML = WORLD_CLOCKS.map(c => {
+    const grid = document.getElementById('clockGrid');
+    grid.innerHTML = WORLD_CLOCKS.map(c => {
         const timeStr = now.toLocaleTimeString('en-US', { timeZone: c.tz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: !clockIs24HR });
         const dateStr = now.toLocaleDateString('en-US', { timeZone: c.tz, weekday: 'short', month: 'short', day: 'numeric' });
         const dstDot = isDST(c.tz, now) ? '<span class="clock-dst-dot"></span>' : '';
@@ -652,6 +683,8 @@ function renderClocks() {
             <div class="clock-detail">${dstDot}${dateStr} · ${offsetLabel(c.tz, now)}</div>
         </div>`;
     }).join('');
+    // Apply Twemoji to clock grid so all flags render on PC
+    applyTwemoji(grid);
 }
 
 document.getElementById('dateIn').addEventListener('change', calculate);
@@ -697,6 +730,7 @@ function renderAltDropdown(items) {
             <span>${c.name}</span><span class="tz-offset">${off}${c.hasDST?' · DST':''}</span>
         </div>`;
     }).join('');
+    applyTwemoji(dd);
     dd.querySelectorAll('.d-item').forEach(el => {
         el.addEventListener('mousedown', e => { e.preventDefault(); pickAltCountry(COUNTRIES.find(c => c.tz === el.dataset.tz)); });
     });
@@ -721,7 +755,6 @@ function renderAltResult() {
     const off     = offsetLabel(altSelectedTZ, refDate);
     const country = COUNTRIES.find(c => c.tz === altSelectedTZ);
     const dstBadge = country && country.hasDST && isDST(altSelectedTZ, refDate) ? '<span class="dst-pill" style="display:inline;margin-left:6px;">DST ON</span>' : '';
-    // Diff from SL
     const slOff  = getOffsetMins(SL_TZ, refDate);
     const altOff = getOffsetMins(altSelectedTZ, refDate);
     const diff   = altOff - slOff;
@@ -729,15 +762,22 @@ function renderAltResult() {
     const diffAbs  = Math.abs(diff);
     const diffStr  = diffAbs % 60 > 0 ? `${diffSign}${Math.floor(diffAbs/60)}h ${diffAbs%60}m` : `${diffSign}${Math.floor(diffAbs/60)}h`;
 
-    document.getElementById('altResultBox').innerHTML = `
+    const altBox = document.getElementById('altResultBox');
+    altBox.innerHTML = `
         <div class="alt-result-box">
             <div class="result-label">${country ? country.name : altSelectedTZ} ${dstBadge}</div>
             <div class="result-time">${altTime}</div>
             <div class="result-date">${altDate}</div>
             <div class="result-offset">${off} &nbsp;·&nbsp; ${diffStr} from Sri Lanka</div>
         </div>`;
+    // Apply Twemoji to alt result
+    applyTwemoji(altBox);
 }
 
+// Apply Twemoji to static page elements on load
+window.addEventListener('load', () => {
+    applyTwemoji(document.querySelector('.header'));
+});
 </script>
 </body>
 </html>
