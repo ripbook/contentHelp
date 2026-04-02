@@ -18,215 +18,255 @@
     --border-color: #334155;
 }
 
-/* ── Title glow keyframe ── */
+/* ── Sidebar Layout ── */
+.app-shell { display: flex; min-height: 100vh; }
+.sidebar {
+    width: 220px; min-width: 220px;
+    background: #111827;
+    border-right: 1px solid #1e293b;
+    display: flex; flex-direction: column;
+    position: fixed; top: 0; left: 0;
+    height: 100vh; z-index: 1000;
+    overflow-y: auto; transition: transform 0.3s ease;
+}
+.sidebar-logo {
+    padding: 22px 18px 16px;
+    border-bottom: 1px solid #1e293b;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 8px;
+}
+.sidebar-logo img { width: 42px; filter: drop-shadow(0 0 8px rgba(59,130,246,0.5)); }
+.sidebar-logo span { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; color: #3b82f6; text-transform: uppercase; }
+.sidebar-nav { flex: 1; padding: 12px 10px; display: flex; flex-direction: column; gap: 4px; }
+.sidebar-nav a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 10px;
+    text-decoration: none; color: #94a3b8;
+    font-size: 0.8rem; font-weight: 600;
+    transition: all 0.2s ease; border: 1px solid transparent;
+    font-family: 'Poppins', sans-serif;
+}
+.sidebar-nav a i { width: 16px; text-align: center; font-size: 0.85rem; flex-shrink: 0; }
+.sidebar-nav a:hover { background: #1e293b; color: #f8fafc; border-color: #334155; }
+.sidebar-nav a.active { background: rgba(59,130,246,0.15); color: #3b82f6; border-color: rgba(59,130,246,0.3); }
+.sidebar-nav a.active i { color: #3b82f6; }
+.sidebar-divider { height: 1px; background: #1e293b; margin: 8px 10px; }
+.sidebar-section-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #475569; padding: 6px 12px 4px; }
+.sidebar-toggle {
+    display: none; position: fixed; top: 14px; left: 14px;
+    z-index: 1100; background: #1e293b; border: 1px solid #334155;
+    color: #fff; width: 40px; height: 40px; border-radius: 10px;
+    cursor: pointer; align-items: center; justify-content: center; font-size: 16px;
+}
+.prev-version-btn {
+    position: fixed; top: 14px; right: 14px;
+    z-index: 1100; background: #1e293b; border: 1px solid #334155;
+    color: #94a3b8; padding: 0 14px; height: 36px; border-radius: 10px;
+    cursor: pointer; display: flex; align-items: center; gap: 7px;
+    font-size: 0.72rem; font-weight: 600; font-family: 'Poppins', sans-serif;
+    text-decoration: none; letter-spacing: 0.3px;
+    transition: all 0.2s ease;
+}
+.prev-version-btn:hover { background: #334155; color: #f8fafc; border-color: #475569; }
+.sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 999; }
+.main-content { margin-left: 220px; flex: 1; min-width: 0; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; }
+@media (max-width: 768px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-toggle { display: flex; }
+    .sidebar-overlay.open { display: block; }
+    .main-content { margin-left: 0; padding: 20px 15px; padding-top: 65px; align-items: center; }
+}
+
+/* ── Page Styles ── */
+body {
+    font-family: 'Poppins', 'Mukta Malar', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+}
+.container { max-width: 1000px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+.logo-container { text-align: center; margin-bottom: 6px; }
+.main-logo { max-width: 60px; height: auto; filter: drop-shadow(0 0 10px rgba(59,130,246,0.5)); }
+.header { text-align: center; margin-bottom: 16px; width: 100%; }
+
 @keyframes yellowGlow {
     0%   { text-shadow: 0 2px 10px rgba(0,0,0,0.5), 0 0 0px rgba(250,204,21,0); }
     50%  { text-shadow: 0 2px 10px rgba(0,0,0,0.5), 0 0 28px rgba(250,204,21,0.55), 0 0 60px rgba(250,204,21,0.2); }
     100% { text-shadow: 0 2px 10px rgba(0,0,0,0.5), 0 0 0px rgba(250,204,21,0); }
 }
+@keyframes shineSweep { 0% { left: -80%; } 100% { left: 130%; } }
 
-/* ── Button shine sweep ── */
-@keyframes shineSweep {
-    0%   { left: -80%; }
-    100% { left: 130%;  }
-}
-
-body {
-    font-family: 'Poppins', 'Mukta Malar', sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    margin: 0; padding: 20px;
-    display: flex; justify-content: center;
-}
-.container { max-width: 1200px; width: 100%; position: relative; }
-
-.logo-container { text-align: center; margin-bottom: 10px; }
-.main-logo {
-    max-width: 60px; height: auto;
-    filter: drop-shadow(0 0 10px rgba(59,130,246,0.5));
-}
-
-.header { text-align: center; margin-bottom: 40px; }
 .header h1 {
-    color: #fff;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-top: 10px;
+    color: #fff; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; margin-top: 10px;
     animation: yellowGlow 3s ease-in-out infinite;
 }
-
-.grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+.welcome-box {
+    background: var(--card-bg); border-radius: 16px; padding: 28px 30px;
+    border: 1px solid var(--border-color); margin-bottom: 28px;
+    border-left: 4px solid var(--accent-color); width: 100%;
 }
-@media (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
-
+.welcome-box h2 { font-size: 1rem; color: #fff; margin: 0 0 10px; display: flex; align-items: center; gap: 10px; }
+.welcome-box h2 i { color: var(--accent-color); }
+.welcome-box p { color: var(--text-muted); font-size: 0.85rem; line-height: 1.7; margin: 0; }
+.grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    width: 100%;
+}
 .card {
-    background: var(--card-bg);
-    border-radius: 16px;
+    background: var(--card-bg); border-radius: 16px;
     padding: 22px 22px 20px 22px;
     border: 1px solid var(--border-color);
     box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    text-decoration: none;
-    color: inherit;
+    transition: all 0.3s ease; display: flex;
+    flex-direction: column; text-decoration: none; color: inherit;
+    flex: 1 1 260px;
+    max-width: 310px;
+    box-sizing: border-box;
 }
-.card:hover {
-    transform: translateY(-5px);
-    border-color: var(--accent-color);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.4);
-}
+@media (max-width: 768px) { .card { max-width: 100%; } }
+.card:hover { transform: translateY(-5px); border-color: var(--accent-color); box-shadow: 0 15px 30px rgba(0,0,0,0.4); }
 .card h2 {
     font-size: 1rem; color: #fff; margin: 0;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 13px;
+    border-bottom: 1px solid var(--border-color); padding-bottom: 13px;
     display: flex; align-items: center; gap: 9px;
 }
 .card h2 i { color: var(--accent-color); font-size: 1rem; }
-
 .content-box {
     font-size: 0.82rem; color: var(--text-muted);
-    margin: 13px 0 16px 0;
-    background: #0f172a;
-    padding: 12px 14px;
-    border-radius: 10px;
+    margin: 13px 0 16px 0; background: #0f172a;
+    padding: 12px 14px; border-radius: 10px;
     border-left: 4px solid var(--accent-color);
     min-height: 42px; flex: 1; line-height: 1.5;
 }
-
-/* ── Button base ── */
 .btn {
-    position: relative;
-    overflow: hidden;
-    background-color: var(--accent-color);
-    color: white;
-    border: none;
-    padding: 11px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 91%;
-    margin-top: auto;
-    font-family: 'Poppins', 'Mukta Malar', sans-serif;
-    font-size: 13.5px;
-    text-decoration: none;
-    letter-spacing: 0.2px;
+    position: relative; overflow: hidden;
+    background-color: var(--accent-color); color: white; border: none;
+    padding: 11px 16px; border-radius: 8px; cursor: pointer;
+    font-weight: 600; display: flex; align-items: center;
+    justify-content: center; gap: 8px; width: 91%;
+    margin-top: auto; font-family: 'Poppins', 'Mukta Malar', sans-serif;
+    font-size: 13.5px; text-decoration: none; letter-spacing: 0.2px;
     transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
 }
 .btn i { font-size: 13px; transition: transform 0.25s ease; }
-
-/* shine pseudo-element */
 .btn::after {
-    content: '';
-    position: absolute;
-    top: 0; left: -80%;
+    content: ''; position: absolute; top: 0; left: -80%;
     width: 50%; height: 100%;
     background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.28) 50%, transparent 100%);
-    transform: skewX(-20deg);
-    opacity: 0;
-    transition: opacity 0.1s;
+    transform: skewX(-20deg); opacity: 0; transition: opacity 0.1s;
 }
-
-/* hover: lift + glow + shine + icon nudge */
-.btn:hover {
-    transform: translateY(-3px) scale(1.025);
-    box-shadow: 0 8px 22px rgba(0,0,0,0.35);
-    filter: brightness(1.18);
-}
-.btn:hover::after {
-    opacity: 1;
-    animation: shineSweep 0.55s ease forwards;
-}
-.btn:hover i {
-    transform: scale(1.2) rotate(-8deg);
-}
-
-/* active press */
-.btn:active {
-    transform: translateY(0px) scale(0.98);
-    filter: brightness(0.95);
-    box-shadow: none;
-}
-
-.top-right-btn {
-    position: absolute; top: 0; right: 0;
-    background-color: #334155; color: white; padding: 10px 20px;
-    border-radius: 8px; text-decoration: none; font-size: 14px;
-    font-weight: 600; display: flex; align-items: center; gap: 8px;
-    border: 1px solid var(--border-color); transition: 0.3s; z-index: 100;
-}
-.top-right-btn:hover { background-color: var(--accent-color); transform: translateY(-2px); }
+.btn:hover { transform: translateY(-3px) scale(1.025); box-shadow: 0 8px 22px rgba(0,0,0,0.35); filter: brightness(1.18); }
+.btn:hover::after { opacity: 1; animation: shineSweep 0.55s ease forwards; }
+.btn:hover i { transform: scale(1.2) rotate(-8deg); }
+.btn:active { transform: translateY(0px) scale(0.98); filter: brightness(0.95); box-shadow: none; }
 </style>
 </head>
 <body>
-<div class="container">
 
-    <a href="https://ripbook.github.io/contentHelpV2" class="top-right-btn">
-        <i class="fas fa-arrow-left"></i> Switch to Version 2.0
-    </a>
+<button class="sidebar-toggle" onclick="toggleSidebar()" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+<a href="https://ripbook.github.io/contentHelp/" target="_blank" class="prev-version-btn"><i class="fas fa-history"></i> Previous Version</a>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-    <div class="logo-container">
-        <img src="https://ripbook.github.io/contentHelp/ripbook_logo.png" alt="RIPBOOK Logo" class="main-logo">
-    </div>
+<div class="app-shell">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <img src="https://ripbook.github.io/contentHelp/ripbook_logo.png" alt="RIPBOOK Logo">
+            <span>Content Help</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="index.html" class="active"><i class="fas fa-home"></i> Dashboard</a>
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-section-label">Tools</div>
+            <a href="copy-texts.html"><i class="fas fa-file-alt"></i> Obituary &amp; Live Text</a>
+            <a href="thumbnail.html"><i class="fas fa-paintbrush"></i> Create Thumbnail</a>
+            <a href="photo-crop.html"><i class="fas fa-crop-alt"></i> Photo Crop &amp; WM</a>
+            <a href="QRgenarator.html"><i class="fas fa-qrcode"></i> QR Generator</a>
+            <a href="photo-resizer.html"><i class="fas fa-expand-arrows-alt"></i> Bulk Resizer</a>
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-section-label">Utilities</div>
+            <a href="converters.html"><i class="fab fa-youtube"></i> Link Converters</a>
+            <a href="price-details.html"><i class="fas fa-tags"></i> Price Details</a>
+            <a href="important-links.html"><i class="fas fa-link"></i> Important Links</a>
+            <a href="time-converter.html"><i class="fas fa-clock"></i> Time Converter</a>
+        </nav>
+    </aside>
 
-    <div class="header"><h1>RIPBOOK CONTENT HELP</h1></div>
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="container">
+            <div class="logo-container">
+                <img src="https://ripbook.github.io/contentHelp/ripbook_logo.png" alt="RIPBOOK Logo" class="main-logo">
+            </div>
+            <div class="header"><h1>RIPBOOK CONTENT HELP</h1></div>
 
-    <div class="grid">
-
-        <a href="copy-texts.html" class="card">
-            <h2><i class="fas fa-file-alt"></i> Obituary & Live Text</h2>
-            <div class="content-box">Copy ready-made Tamil content — obituary end text and live streaming announcement.</div>
-            <div class="btn"><i class="far fa-copy"></i> Copy Texts</div>
-        </a>
-
-        <a href="thumbnail.html" class="card">
-            <h2><i class="fas fa-paintbrush"></i> Create Thumbnail</h2>
-            <div class="content-box">You can create the thumbnail for a YouTube live stream here.</div>
-            <div class="btn" style="background-color:#f39c12;"><i class="fas fa-magic"></i> Thumbnail Editor</div>
-        </a>
-
-        <a href="photo-crop.html" class="card">
-            <h2><i class="fas fa-crop-alt"></i> Photo Crop & WM</h2>
-            <div class="content-box">Obituary memorial page watermark cropper (246x266).</div>
-            <div class="btn" style="background-color:#2ecc71;"><i class="fas fa-expand"></i> Photo Cropper</div>
-        </a>
-
-        <a href="converters.html" class="card">
-            <h2><i class="fab fa-youtube"></i> Link Converters</h2>
-            <div class="content-box">Convert YouTube /live/ links and Bunny .m3u8 links to standard formats.</div>
-            <div class="btn" style="background-color:#e74c3c;"><i class="fas fa-sync"></i> Open Converters</div>
-        </a>
-
-        <a href="price-details.html" class="card">
-            <h2><i class="fas fa-tags"></i> Price Details</h2>
-            <div class="content-box">View and copy RIPBOOK service pricing packages.</div>
-            <div class="btn" style="background-color:#8e44ad;"><i class="fas fa-external-link-alt"></i> Open Price List</div>
-        </a>
-
-        <a href="important-links.html" class="card">
-            <h2><i class="fas fa-link"></i> Important Links</h2>
-            <div class="content-box">Quick access to all important RIPBOOK links and resources.</div>
-            <div class="btn" style="background-color:#16a085;"><i class="fas fa-external-link-alt"></i> View Links</div>
-        </a>
-
-    </div>
-
-    <div style="display:flex; justify-content:center; margin-top:20px;">
-        <a href="time-converter.html" class="card" style="max-width:380px; width:100%;">
-            <h2><i class="fas fa-clock"></i> Time Converter</h2>
-            <div class="content-box">Convert time zones and formats quickly for scheduling and coordination.</div>
-            <div class="btn" style="background-color:#e67e22;"><i class="fas fa-exchange-alt"></i> Open Converter</div>
-        </a>
-    </div>
+            <div class="grid">
+                <a href="copy-texts.html" class="card">
+                    <h2><i class="fas fa-file-alt"></i> Obituary &amp; Live Text</h2>
+                    <div class="content-box">Copy ready-made Tamil content — obituary end text and live streaming announcement.</div>
+                    <div class="btn"><i class="far fa-copy"></i> Copy Texts</div>
+                </a>
+                <a href="thumbnail.html" class="card">
+                    <h2><i class="fas fa-paintbrush"></i> Create Thumbnail</h2>
+                    <div class="content-box">You can create the thumbnail for a YouTube live stream here.</div>
+                    <div class="btn" style="background-color:#f39c12;"><i class="fas fa-magic"></i> Thumbnail Editor</div>
+                </a>
+                <a href="photo-crop.html" class="card">
+                    <h2><i class="fas fa-crop-alt"></i> Photo Crop &amp; WM</h2>
+                    <div class="content-box">Obituary memorial page watermark cropper (246x266).</div>
+                    <div class="btn" style="background-color:#2ecc71;"><i class="fas fa-expand"></i> Photo Cropper</div>
+                </a>
+				<a href="time-converter.html" class="card">
+                    <h2><i class="fas fa-clock"></i> Time Converter</h2>
+                    <div class="content-box">Convert time zones and formats quickly for scheduling and coordination.</div>
+                    <div class="btn" style="background-color:#e67e22;"><i class="fas fa-exchange-alt"></i> Open Converter</div>
+                </a>
+                <a href="QRgenarator.html" class="card">
+                    <h2><i class="fas fa-qrcode"></i> QR Generator</h2>
+                    <div class="content-box">Generate memorial card QR codes with photo and name for RIPBOOK memorial pages.</div>
+                    <div class="btn" style="background-color:#d4af37; color:#000;"><i class="fas fa-qrcode"></i> Open Generator</div>
+                </a>
+				<a href="important-links.html" class="card">
+                    <h2><i class="fas fa-link"></i> Important Links</h2>
+                    <div class="content-box">Quick access to all important RIPBOOK links and resources.</div>
+                    <div class="btn" style="background-color:#16a085;"><i class="fas fa-external-link-alt"></i> View Links</div>
+                </a>
+                <a href="photo-resizer.html" class="card">
+                    <h2><i class="fas fa-expand-arrows-alt"></i> Bulk Resizer</h2>
+                    <div class="content-box">Batch resize photos, drag &amp; zoom to position, remove backgrounds and download.</div>
+                    <div class="btn" style="background-color:#0891b2;"><i class="fas fa-expand-arrows-alt"></i> Open Resizer</div>
+                </a>
+                <a href="converters.html" class="card">
+                    <h2><i class="fab fa-youtube"></i> Link Converters</h2>
+                    <div class="content-box">Convert YouTube /live/ links and Bunny .m3u8 links to standard formats.</div>
+                    <div class="btn" style="background-color:#e74c3c;"><i class="fas fa-sync"></i> Open Converters</div>
+                </a>
+                <a href="price-details.html" class="card">
+                    <h2><i class="fas fa-tags"></i> Price Details</h2>
+                    <div class="content-box">View and copy RIPBOOK service pricing packages.</div>
+                    <div class="btn" style="background-color:#8e44ad;"><i class="fas fa-external-link-alt"></i> Open Price List</div>
+                </a>
+                
+                
+            </div>
+        </div>
+    </main>
 </div>
+
+<script>
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('open');
+}
+function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+}
+</script>
 </body>
 </html>
