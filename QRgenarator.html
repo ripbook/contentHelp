@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIPBOOK - Memorial Card Generator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;600;700&family=Playfair+Display:wght@700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    background: #0f172a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Noto Sans Tamil', sans-serif;
+    padding: 30px 20px;
+    gap: 30px;
+  }
+
+  h1 {
+    color: #3b82f6;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 2px;
+    text-align: center;
+    text-shadow: 0 0 20px rgba(59,130,246,0.4);
+  }
+
+  .input-section {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 32px 40px;
+    width: 100%;
+    max-width: 680px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .input-section label {
+    color: #93c5fd;
+    font-size: 1.05rem;
+    letter-spacing: 1px;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 10px;
+  }
+
+  .input-section input[type="text"],
+  .input-section input[type="url"] {
+    flex: 1;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    color: #fff;
+    padding: 14px 18px;
+    font-size: 1.05rem;
+    outline: none;
+    transition: border-color 0.2s;
+    font-family: inherit;
+  }
+  .input-section input[type="url"]:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
+  }
+
+  .input-section button {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 14px 26px;
+    font-weight: 700;
+    font-size: 1.05rem;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    white-space: nowrap;
+    font-family: 'Poppins', inherit;
+  }
+  .input-section button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59,130,246,0.35);
+  }
+  .input-section button:active {
+    transform: translateY(0);
+  }
+
+  /* ── CARD ── */
+  .card-wrapper {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  .card-wrapper.visible { display: flex; }
+
+  .memorial-card {
+    background: #000;
+    border: none;
+    border-radius: 6px;
+    width: 320px;
+    padding: 22px 20px 26px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    box-shadow: 0 0 60px rgba(212,175,55,0.2), inset 0 0 60px rgba(0,0,0,0.8);
+  }
+
+  /* corner ornaments using PNG image */
+  .corner {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+  }
+  .corner img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  /* Top-left: original image */
+  .corner.tl { top: 4px; left: 4px; }
+  .corner.tl img { transform: none; }
+
+  /* Top-right: mirror (flip horizontal) */
+  .corner.tr { top: 4px; right: 4px; }
+  .corner.tr img { transform: scaleX(-1); }
+
+  /* Bottom-left: upside down (flip vertical) */
+  .corner.bl { bottom: 4px; left: 4px; }
+  .corner.bl img { transform: scaleY(-1); }
+
+  /* Bottom-right: upside down + mirror (flip both) */
+  .corner.br { bottom: 4px; right: 4px; }
+  .corner.br img { transform: scale(-1, -1); }
+
+  .card-title {
+    text-align: center;
+    font-family: 'Noto Sans Tamil', sans-serif;
+  }
+  .card-title .line1 {
+    color: #fff;
+    font-size: 1.0rem;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    line-height: 1.5;
+  }
+  .card-title #cardName {
+    color: #d4af37;
+    font-size: 0.78rem;
+    text-decoration: none;
+  }
+  .card-title .line2 {
+    color: #d4af37;
+    font-size: 0.85rem;
+    margin-top: 2px;
+    margin-bottom: -4px;
+    font-style: italic;
+  }
+
+  .qr-frame {
+    background: #fff;
+    border-radius: 4px;
+    padding: 0;
+    width: 200px;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .qr-bg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
+  #qrcode canvas, #qrcode img {
+    width: 180px !important;
+    height: 180px !important;
+  }
+  #qrCanvas {
+    display: block;
+    position: relative;
+    z-index: 1;
+  }
+
+  .scan-text {
+    color: #fff;
+    font-size: 0.85rem;
+    text-align: center;
+    font-family: 'Noto Sans Tamil', sans-serif;
+    letter-spacing: 0.5px;
+  }
+
+  .ripbook-logo {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 2px;
+  }
+  .rip-badge {
+    background: #e8a020;
+    color: #fff;
+    font-weight: 800;
+    font-size: 0.75rem;
+    border-radius: 4px;
+    padding: 2px 6px;
+    letter-spacing: 1px;
+    font-family: 'Playfair Display', serif;
+  }
+  .ripbook-text {
+    color: #fff;
+    font-weight: 800;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    font-family: 'Playfair Display', serif;
+  }
+  .ripbook-dot {
+    color: #d4af37;
+  }
+
+  /* photo section */
+  .oval-photo-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 6px 0 2px;
+  }
+  .oval-connector { display: none; }
+  .oval-photo {
+    max-width: 80px;
+    max-height: 80px;
+    width: auto;
+    height: auto;
+    border-radius: 6px;
+    border: none;
+    object-fit: contain;
+    background: transparent;
+    display: block;
+  }
+
+  /* download button */
+  .download-btn {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 11px 30px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    font-family: 'Poppins', inherit;
+    letter-spacing: 0.5px;
+  }
+  .download-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59,130,246,0.4);
+  }
+
+/* ── Sidebar Layout (QR page) ── */
+.app-shell { display: flex; min-height: 100vh; }
+.sidebar {
+    width: 220px; min-width: 220px;
+    background: #111827;
+    border-right: 1px solid #1e293b;
+    display: flex; flex-direction: column;
+    position: fixed; top: 0; left: 0;
+    height: 100vh; z-index: 1000;
+    overflow-y: auto; transition: transform 0.3s ease;
+}
+.sidebar-logo {
+    padding: 22px 18px 16px;
+    border-bottom: 1px solid #1e293b;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 8px;
+}
+.sidebar-logo img { width: 42px; filter: drop-shadow(0 0 8px rgba(59,130,246,0.5)); }
+.sidebar-logo span { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; color: #3b82f6; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+.sidebar-nav { flex: 1; padding: 12px 10px; display: flex; flex-direction: column; gap: 4px; }
+.sidebar-nav a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 10px;
+    text-decoration: none; color: #94a3b8;
+    font-size: 0.8rem; font-weight: 600;
+    transition: all 0.2s ease; border: 1px solid transparent;
+    font-family: 'Poppins', sans-serif;
+}
+.sidebar-nav a i { width: 16px; text-align: center; font-size: 0.85rem; flex-shrink: 0; }
+.sidebar-nav a:hover { background: #1e293b; color: #f8fafc; border-color: #334155; }
+.sidebar-nav a.active { background: rgba(59,130,246,0.15); color: #3b82f6; border-color: rgba(59,130,246,0.3); }
+.sidebar-nav a.active i { color: #3b82f6; }
+.sidebar-divider { height: 1px; background: #1e293b; margin: 8px 10px; }
+.sidebar-section-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #475569; padding: 6px 12px 4px; font-family: 'Poppins', sans-serif; }
+.sidebar-toggle {
+    display: none; position: fixed; top: 14px; left: 14px;
+    z-index: 1100; background: #1e293b; border: 1px solid #334155;
+    color: #fff; width: 40px; height: 40px; border-radius: 10px;
+    cursor: pointer; align-items: center; justify-content: center; font-size: 16px;
+}
+.sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 999; }
+.main-content { margin-left: 220px; flex: 1; min-width: 0; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+@media (max-width: 768px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-toggle { display: flex; }
+    .sidebar-overlay.open { display: block; }
+    .main-content { margin-left: 0; padding: 20px 15px; padding-top: 65px; }
+}
+
+body { display: block; padding: 0; }
+
+/* ── Header matching other pages ── */
+.page-wrap { display: flex; flex-direction: column; align-items: center; width: 100%; gap: 0; }
+.logo-container { text-align: center; margin-bottom: 6px; }
+.main-logo { max-width: 60px; height: auto; filter: drop-shadow(0 0 10px rgba(59,130,246,0.5)); }
+.header { text-align: center; margin-bottom: 20px; width: 100%; }
+.header h1 {
+    color: #fff; font-weight: 600; letter-spacing: 2px;
+    text-transform: uppercase; margin-top: 10px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    font-family: 'Poppins', sans-serif; 
+	font-size: clamp(24px, 5vw, 28px);
+}
+.header-sub { color: #94a3b8; font-size: 1.1rem; margin-top: 4px; font-family: 'Poppins', sans-serif; font-weight: 200; }
+</style>
+</head>
+<body>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<button class="sidebar-toggle" onclick="toggleSidebar()" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <img src="https://ripbook.github.io/contentHelp/ripbook_logo.png" alt="RIPBOOK Logo">
+            <span>Content Help</span>
+        </div>
+        <nav class="sidebar-nav">
+<a href="index.html"><i class="fas fa-home"></i> Dashboard</a>
+<div class="sidebar-divider"></div><div class="sidebar-section-label">Tools</div>
+<a href="copy-texts.html"><i class="fas fa-file-alt"></i> Obituary &amp; Live Text</a>
+<a href="thumbnail.html"><i class="fas fa-paintbrush"></i> Create Thumbnail</a>
+<a href="photo-crop.html"><i class="fas fa-crop-alt"></i> Photo Crop &amp; WM</a>
+<a href="QRgenarator.html" class="active"><i class="fas fa-qrcode"></i> QR Generator</a>
+<a href="photo-resizer.html"><i class="fas fa-expand-arrows-alt"></i>  Bulk Resizer</a>
+<div class="sidebar-divider"></div><div class="sidebar-section-label">Utilities</div>
+<a href="converters.html"><i class="fab fa-youtube"></i> Link Converters</a>
+<a href="price-details.html"><i class="fas fa-tags"></i> Price Details</a>
+<a href="important-links.html"><i class="fas fa-link"></i> Important Links</a>
+<a href="time-converter.html"><i class="fas fa-clock"></i> Time Converter</a>
+        </nav>
+    </aside>
+    <main class="main-content">
+
+<div class="page-wrap">
+    <div class="logo-container">
+        <img src="https://ripbook.github.io/contentHelp/ripbook_logo.png" alt="RIPBOOK Logo" class="main-logo">
+    </div>
+    <div class="header">
+        <h1>QR Generator — Memorial Card</h1>
+        <p class="header-sub">If you don't need the photo in the output, just untick it</p>
+    </div>
+
+<div class="input-section">
+  <label>Title (e.g. 5ம் ஆண்டு நினைவஞ்சலி)</label>
+  <input type="text" id="titleInput" placeholder="5ம் ஆண்டு நினைவஞ்சலி" />
+
+  <label>Decedent Name / இறந்தவர் பெயர்</label>
+  <input type="text" id="nameInput" placeholder="இறந்தவர் பெயர்" />
+
+  <label style="display:flex; align-items:center; gap:10px;">
+   Decedent Photo
+    <span style="display:flex; align-items:center; gap:6px; font-size:0.85rem; color:#aaa;">
+      <input type="checkbox" id="photoToggle" checked onchange="togglePhotoInput()" style="width:15px; height:15px; accent-color:#d4af37; cursor:pointer;" />
+      Include Photo
+    </span>
+  </label>
+  <div id="photoInputArea">
+    <input type="file" id="photoInput" accept="image/*" style="color:#d4af37; background:#222; border:1px solid #444; border-radius:10px; padding:10px 14px; cursor:pointer; width:100%;" />
+    <div id="pasteZone" tabindex="0" style="margin-top:8px; background:#1a1a1a; border:2px dashed #444; border-radius:10px; padding:14px; text-align:center; color:#666; font-size:0.82rem; cursor:pointer; transition: border-color 0.2s;" onclick="this.focus()" onfocus="this.style.borderColor='#d4af37'" onblur="this.style.borderColor='#444'">
+      📋 Or paste image here (Ctrl+V) — click to focus
+    </div>
+    <div id="pastePreview" style="display:none; margin-top:8px; text-align:center;">
+      <img id="pastePreviewImg" style="max-height:80px; border-radius:8px; border:2px solid #d4af37;" />
+      <div style="color:#888; font-size:0.78rem; margin-top:4px;">Pasted image ready ✓ <span onclick="clearPaste()" style="color:#d4af37; cursor:pointer; text-decoration:underline;">✕ clear</span></div>
+    </div>
+  </div>
+
+  <label>Memorial Page Link</label>
+  <div class="input-row">
+    <input type="url" id="linkInput" placeholder="https://ripbook.com/memorial/..." />
+    <button onclick="generateCard()">Generate QR</button>
+  </div>
+</div>
+
+<!-- CARD OUTPUT -->
+<div class="card-wrapper" id="cardWrapper">
+  <div class="memorial-card" id="memorialCard">
+    <!-- corner ornaments using PNG image -->
+    <!-- Top-left: original -->
+    <div class="corner tl">
+      <img src="https://ripbook.github.io/contentHelp/corner.png" alt="" crossorigin="anonymous" />
+    </div>
+    <!-- Top-right: mirror (scaleX -1) -->
+    <div class="corner tr">
+      <img src="https://ripbook.github.io/contentHelp/corner.png" alt="" crossorigin="anonymous" />
+    </div>
+    <!-- Bottom-left: upside down (scaleY -1) -->
+    <div class="corner bl">
+      <img src="https://ripbook.github.io/contentHelp/corner.png" alt="" crossorigin="anonymous" />
+    </div>
+    <!-- Bottom-right: upside down + mirror (scale -1,-1) -->
+    <div class="corner br">
+      <img src="https://ripbook.github.io/contentHelp/corner.png" alt="" crossorigin="anonymous" />
+    </div>
+
+    <div class="card-title">
+      <div class="line1" id="cardTitle">31ம் நாள் நினைவஞ்சலியும்,<br>நன்றி நவிலலும்</div>
+      <div class="oval-photo-wrap">
+        <img class="oval-photo" id="deceasedPhoto" src="" alt="Photo" style="display:none;" />
+      </div>
+      <div class="line1" id="cardName" style="margin-top:4px;">இறந்தவர் பெயர்</div>
+      <div class="line2">To view sample, Scan me</div>
+    </div>
+
+    <div class="qr-frame">
+      <img class="qr-bg" src="https://ripbook.github.io/contentHelp/QRscan.png" alt="bg" crossorigin="anonymous" id="qrBgImg" />
+      <div id="qrcode" style="display:none;"></div>
+      <canvas id="qrCanvas" width="180" height="180"></canvas>
+    </div>
+
+    <div class="scan-text">மாதிரியைப் பார்க்க ஸ்கேன் செய்யவும்.</div>
+
+    <div class="ripbook-logo">
+      <span class="rip-badge">RIP</span>
+      <span class="ripbook-text">RIPBOOK<span class="ripbook-dot">.</span></span>
+    </div>
+  </div>
+
+  <button class="download-btn" onclick="downloadCard()">⬇ Download Card</button>
+</div>
+
+<script>
+  let currentQR = null;
+  let pastedImageDataURL = null;
+
+  // ── Checkbox toggle ──
+  function togglePhotoInput() {
+    const show = document.getElementById('photoToggle').checked;
+    document.getElementById('photoInputArea').style.display = show ? 'block' : 'none';
+    if (!show) clearPaste();
+  }
+
+  // ── Paste support ──
+  function clearPaste() {
+    pastedImageDataURL = null;
+    document.getElementById('pastePreview').style.display = 'none';
+    document.getElementById('pastePreviewImg').src = '';
+  }
+
+  // Global paste listener (works anywhere on page)
+  document.addEventListener('paste', function(e) {
+    if (!document.getElementById('photoToggle').checked) return;
+    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+    for (const item of items) {
+      if (item.type.startsWith('image/')) {
+        const blob = item.getAsFile();
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          pastedImageDataURL = ev.target.result;
+          document.getElementById('pastePreviewImg').src = pastedImageDataURL;
+          document.getElementById('pastePreview').style.display = 'block';
+          document.getElementById('pasteZone').textContent = '✅ Image pasted! Paste again to replace.';
+          setTimeout(() => {
+            document.getElementById('pasteZone').textContent = '📋 Or paste image here (Ctrl+V) — click to focus';
+          }, 2000);
+        };
+        reader.readAsDataURL(blob);
+        break;
+      }
+    }
+  });
+
+  // ── Generate Card ──
+  function generateCard() {
+    const link = document.getElementById('linkInput').value.trim();
+    if (!link) { alert('Please enter a link.'); return; }
+
+    const titleVal = document.getElementById('titleInput').value.trim();
+    const nameVal  = document.getElementById('nameInput').value.trim();
+    if (titleVal) document.getElementById('cardTitle').textContent = titleVal;
+    if (nameVal)  document.getElementById('cardName').textContent  = nameVal;
+
+    const photoImg         = document.getElementById('deceasedPhoto');
+    const includePhoto     = document.getElementById('photoToggle').checked;
+
+    if (!includePhoto) {
+      photoImg.style.display = 'none';
+      document.querySelector('.oval-photo-wrap').style.display = 'none';
+    } else {
+      document.querySelector('.oval-photo-wrap').style.display = 'flex';
+
+      const applyPhoto = (src) => {
+        photoImg.src = src;
+        photoImg.style.display = 'block';
+      };
+
+      if (pastedImageDataURL) {
+        applyPhoto(pastedImageDataURL);
+      } else if (document.getElementById('photoInput').files[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => applyPhoto(e.target.result);
+        reader.readAsDataURL(document.getElementById('photoInput').files[0]);
+      } else {
+        photoImg.style.display = 'none';
+      }
+    }
+
+    // clear old QR
+    const container = document.getElementById('qrcode');
+    container.innerHTML = '';
+
+    currentQR = new QRCode(container, {
+      text: link,
+      width: 180,
+      height: 180,
+      colorDark: '#000',
+      colorLight: '#fff',
+      correctLevel: QRCode.CorrectLevel.H
+    });
+
+    setTimeout(() => {
+      const qrImg = container.querySelector('img') || container.querySelector('canvas');
+      const outCanvas = document.getElementById('qrCanvas');
+      const ctx = outCanvas.getContext('2d');
+
+      const drawWithLogo = (qrSource) => {
+        const bgImg = document.getElementById('qrBgImg');
+
+        const renderAll = (bg) => {
+          ctx.clearRect(0, 0, 180, 180);
+          if (bg && bg.complete && bg.naturalWidth > 0) {
+            ctx.drawImage(bg, 0, 0, 180, 180);
+          } else {
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(0, 0, 180, 180);
+          }
+          ctx.globalAlpha = 0.88;
+          ctx.drawImage(qrSource, 0, 0, 180, 180);
+          ctx.globalAlpha = 1.0;
+
+          const logo = new Image();
+          logo.crossOrigin = 'anonymous';
+          logo.src = 'https://ripbook.github.io/contentHelp/ripbook_logo.png';
+          logo.onload = () => {
+            const logoSize = 38;
+            const x = (180 - logoSize) / 2;
+            const y = (180 - logoSize) / 2;
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(x - 3, y - 3, logoSize + 6, logoSize + 6);
+            ctx.drawImage(logo, x, y, logoSize, logoSize);
+          };
+          logo.onerror = () => {};
+        };
+
+        if (bgImg && bgImg.complete && bgImg.naturalWidth > 0) {
+          renderAll(bgImg);
+        } else if (bgImg) {
+          bgImg.onload = () => renderAll(bgImg);
+          bgImg.onerror = () => renderAll(null);
+        } else {
+          renderAll(null);
+        }
+      };
+
+      if (qrImg && qrImg.tagName === 'CANVAS') {
+        drawWithLogo(qrImg);
+      } else if (qrImg && qrImg.tagName === 'IMG') {
+        if (qrImg.complete) { drawWithLogo(qrImg); }
+        else { qrImg.onload = () => drawWithLogo(qrImg); }
+      }
+    }, 200);
+
+    document.getElementById('cardWrapper').classList.add('visible');
+    document.getElementById('cardWrapper').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  async function downloadCard() {
+    if (!window.html2canvas) {
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+      script.onload = () => captureCard();
+      document.head.appendChild(script);
+    } else {
+      captureCard();
+    }
+  }
+
+  function captureCard() {
+    const card = document.getElementById('memorialCard');
+    html2canvas(card, { backgroundColor: '#000', scale: 3, useCORS: true, allowTaint: false }).then(canvas => {
+      const a = document.createElement('a');
+      a.href = canvas.toDataURL('image/png');
+      a.download = 'ripbook_memorial_card.png';
+      a.click();
+    });
+  }
+</script>
+
+<!-- load html2canvas upfront -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</div><!-- end page-wrap -->
+    </main>
+</div>
+<script>
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('open');
+}
+function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+}
+</script>
+</body>
+</html>

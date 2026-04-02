@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIPBOOK CONTENT HELP</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Mukta+Malar:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+:root {
+    --primary-color: #1e293b;
+    --accent-color: #3b82f6;
+    --bunny-color: #9b59b6;
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
+    --text-color: #f8fafc;
+    --text-muted: #94a3b8;
+    --border-color: #334155;
+}
+body {
+    font-family: 'Poppins', 'Mukta Malar', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0; padding: 20px;
+    display: flex; justify-content: center;
+}
+.container { max-width: 1200px; width: 100%; position: relative; }
+.logo-container { text-align: center; margin-bottom: 10px; }
+.main-logo { max-width: 60px; height: auto; filter: drop-shadow(0 0 10px rgba(59,130,246,0.5)); }
+.header { text-align: center; margin-bottom: 40px; }
+.header h1 {
+    color: #fff; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; margin-top: 10px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+	font-size: clamp(24px, 5vw, 28px);
+}
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+.card {
+    background: var(--card-bg); border-radius: 16px; padding: 25px;
+    border: 1px solid var(--border-color); box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    transition: all 0.3s ease; display: flex; flex-direction: column;
+}
+.card:hover {
+    transform: translateY(-5px); border-color: var(--accent-color);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+}
+.card h2 {
+    font-size: 1.1rem; color: #fff; margin-top: 0;
+    border-bottom: 1px solid var(--border-color); padding-bottom: 15px;
+    display: flex; align-items: center; gap: 10px;
+}
+.card h2 i { color: var(--accent-color); }
+.converter-input {
+    width: 100%; padding: 12px; margin-bottom: 15px;
+    background: #0f172a; border: 1px solid var(--border-color);
+    border-radius: 8px; font-size: 13px; color: #fff; box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+.converter-input:focus { outline: none; border-color: var(--accent-color); }
+.converter-input::placeholder { color: var(--text-muted); }
+.btn {
+    background-color: var(--accent-color); color: white; border: none;
+    padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: 0.3s; width: 100%; margin-top: auto;
+    font-family: 'Poppins', 'Mukta Malar', sans-serif; font-size: 14px;
+}
+.btn:hover { filter: brightness(1.2); }
+.back-btn {
+     top: 0; right: 0;
+    background-color: #334155; color: white; padding: 10px 20px;
+    border-radius: 8px; text-decoration: none; font-size: 14px;
+    font-weight: 600; display: flex; align-items: center; gap: 8px;
+    border: 1px solid var(--border-color); transition: 0.3s;
+}
+.back-btn:hover { background-color: var(--accent-color); transform: translateY(-2px); }
+
+/* ── Sidebar Layout ── */
+.app-shell { display: flex; min-height: 100vh; }
+.sidebar {
+    width: 220px; min-width: 220px;
+    background: #111827;
+    border-right: 1px solid #1e293b;
+    display: flex; flex-direction: column;
+    position: fixed; top: 0; left: 0;
+    height: 100vh; z-index: 1000;
+    overflow-y: auto; transition: transform 0.3s ease;
+}
+.sidebar-logo {
+    padding: 22px 18px 16px;
+    border-bottom: 1px solid #1e293b;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 8px;
+}
+.sidebar-logo img { width: 42px; filter: drop-shadow(0 0 8px rgba(59,130,246,0.5)); }
+.sidebar-logo span { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; color: #3b82f6; text-transform: uppercase; }
+.sidebar-nav { flex: 1; padding: 12px 10px; display: flex; flex-direction: column; gap: 4px; }
+.sidebar-nav a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 10px;
+    text-decoration: none; color: #94a3b8;
+    font-size: 0.8rem; font-weight: 600;
+    transition: all 0.2s ease; border: 1px solid transparent;
+    font-family: 'Poppins', sans-serif;
+}
+.sidebar-nav a i { width: 16px; text-align: center; font-size: 0.85rem; flex-shrink: 0; }
+.sidebar-nav a:hover { background: #1e293b; color: #f8fafc; border-color: #334155; }
+.sidebar-nav a.active { background: rgba(59,130,246,0.15); color: #3b82f6; border-color: rgba(59,130,246,0.3); }
+.sidebar-nav a.active i { color: #3b82f6; }
+.sidebar-divider { height: 1px; background: #1e293b; margin: 8px 10px; }
+.sidebar-section-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #475569; padding: 6px 12px 4px; }
+.sidebar-toggle {
+    display: none; position: fixed; top: 14px; left: 14px;
+    z-index: 1100; background: #1e293b; border: 1px solid #334155;
+    color: #fff; width: 40px; height: 40px; border-radius: 10px;
+    cursor: pointer; align-items: center; justify-content: center; font-size: 16px;
+}
+.sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 999; }
+.main-content { margin-left: 220px; flex: 1; min-width: 0; padding: 20px; box-sizing: border-box; }
+@media (max-width: 768px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-toggle { display: flex; }
+    .sidebar-overlay.open { display: block; }
+    .main-content { margin-left: 0; padding: 20px 15px; padding-top: 65px; }
+}
+
+/* body needs margin reset */
+body { margin: 0; }
+.back-btn, .top-right-btn { display: none !important; }
+</style>
+</head>
+<body>
+
+<button class="sidebar-toggle" onclick="toggleSidebar()" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <img src="https://ripbook.github.io/contentHelp/ripbook_logo.png" alt="RIPBOOK Logo">
+            <span>Content Help</span>
+        </div>
+       <nav class="sidebar-nav">
+<a href="index.html"><i class="fas fa-home"></i> Dashboard</a>
+<div class="sidebar-divider"></div><div class="sidebar-section-label">Tools</div>
+<a href="copy-texts.html"><i class="fas fa-file-alt"></i> Obituary &amp; Live Text</a>
+<a href="thumbnail.html"><i class="fas fa-paintbrush"></i> Create Thumbnail</a>
+<a href="photo-crop.html"><i class="fas fa-crop-alt"></i> Photo Crop &amp; WM</a>
+<a href="QRgenarator.html"><i class="fas fa-qrcode"></i> QR Generator</a>
+<a href="photo-resizer.html"><i class="fas fa-expand-arrows-alt"></i>  Bulk Resizer</a>
+<div class="sidebar-divider"></div><div class="sidebar-section-label">Utilities</div>
+<a href="time-converter.html"><i class="fas fa-clock"></i> Time Converter</a>
+<a href="important-links.html"><i class="fas fa-link"></i> Important Links</a>
+<a href="converters.html" class="active"><i class="fab fa-youtube"></i> Link Converters</a>
+<a href="price-details.html"><i class="fas fa-tags"></i> Price Details</a>
+
+
+        </nav>
+    </aside>
+    <main class="main-content">
+
+<div class="container">
+    <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Home</a>
+    <div class="logo-container">
+        <img src="https://ripbook.github.io/contentHelp/ripbook_logo.png" alt="RIPBOOK Logo" class="main-logo">
+    </div>
+    <div class="header"><h1>RIPBOOK CONTENT HELP</h1></div>
+
+    <div class="grid">
+        <div class="card">
+            <h2><i class="fab fa-youtube"></i> YouTube Live Converter</h2>
+            <input type="text" id="inputLink" class="converter-input" placeholder="Paste YouTube /live/ link">
+            <button class="btn" style="background-color:#e74c3c;" onclick="convertYouTube()"><i class="fas fa-sync"></i> Convert Link</button>
+        </div>
+
+        <div class="card">
+            <h2><i class="fas fa-rabbit" style="color:var(--bunny-color);"></i> Bunny Video Converter</h2>
+            <input type="text" id="bunnyInput" class="converter-input" placeholder="Paste Bunny .m3u8 link">
+            <button class="btn" style="background-color:var(--bunny-color);" onclick="convertBunny()"><i class="fas fa-play-circle"></i> To MP4 Link</button>
+        </div>
+    </div>
+</div>
+<script>
+function convertYouTube() {
+    const val = document.getElementById('inputLink').value.trim();
+    if(!val) { Swal.fire({ icon:'error', title:'Error', text:'Please paste a YouTube Live link first', background:'#1e293b', color:'#fff' }); return; }
+    const m = val.match(/\/live\/([a-zA-Z0-9_-]+)/);
+    if(m) {
+        const link = 'https://www.youtube.com/watch?v=' + m[1];
+        navigator.clipboard.writeText(link).then(() => {
+            Swal.fire({ icon:'success', title:'Success', text:'Standard link copied!', background:'#1e293b', color:'#fff' });
+        });
+    } else {
+        Swal.fire({ icon:'error', title:'Error', text:'Invalid YouTube Live URL format', background:'#1e293b', color:'#fff' });
+    }
+}
+function convertBunny() {
+    const val = document.getElementById('bunnyInput').value.trim();
+    if(!val) { Swal.fire({ icon:'error', title:'Empty Field', text:'Please paste a Bunny .m3u8 link first.', background:'#1e293b', color:'#fff' }); return; }
+    if(val.includes('playlist.m3u8')) {
+        const mp4 = val.replace('playlist.m3u8','play_720p.mp4');
+        navigator.clipboard.writeText(mp4).then(() => {
+            Swal.fire({ icon:'success', title:'Converted!', text:'MP4 link copied to clipboard.', timer:2000, showConfirmButton:false, background:'#1e293b', color:'#fff' });
+        });
+    } else {
+        Swal.fire({ icon:'warning', title:'Invalid Link', text:'This is not a valid Bunny .m3u8 playlist.', background:'#1e293b', color:'#fff' });
+    }
+}
+</script>
+    </main>
+</div>
+
+<script>
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('open');
+}
+function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+}
+</script>
+
+</body>
+</html>

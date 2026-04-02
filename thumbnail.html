@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIPBOOK CONTENT HELP</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Mukta+Malar:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root {
+    --primary-color: #1e293b;
+    --accent-color: #3b82f6;
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
+    --text-color: #f8fafc;
+    --text-muted: #94a3b8;
+    --border-color: #334155;
+}
+body {
+    font-family: 'Poppins', 'Mukta Malar', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0; padding: 20px;
+    display: flex; justify-content: center;
+}
+.container { max-width: 1320px; width: 100%; position: relative; }
+.logo-container { text-align: center; margin-bottom: 10px; }
+.main-logo { max-width: 60px; height: auto; filter: drop-shadow(0 0 10px rgba(59,130,246,0.5)); }
+.header { text-align: center; margin-bottom: 20px; }
+.header h1 {
+    color: #fff; font-weight: 600; letter-spacing: 2px;
+    text-transform: uppercase; margin-top: 10px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+	font-size: clamp(24px, 5vw, 28px);
+}
+.header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 5px; }
+.back-btn {
+     top: 0; right: 0;
+    background-color: #334155; color: white; padding: 10px 20px;
+    border-radius: 8px; text-decoration: none; font-size: 14px;
+    font-weight: 600; display: flex; align-items: center; gap: 8px;
+    border: 1px solid var(--border-color); transition: 0.3s;
+}
+.back-btn:hover { background-color: var(--accent-color); transform: translateY(-2px); }
+
+/* Canvas */
+#canvas-container {
+    width: 1280px; height: 720px; position: relative; background: #000;
+    overflow: hidden; border: 1px solid #444; transform: scale(0.65);
+    transform-origin: top center; margin-bottom: -220px;
+}
+#photo-window { position: absolute; top: 20px; left: 52px; width: 393px; height: 700px; z-index: 1; overflow: hidden; }
+#photo-display { width: 100%; height: 100%; cursor: move; position: absolute; background-size: cover; background-position: center; }
+#background-layer {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: url('https://eaglenithu.github.io/Documents/Livebg3.png');
+    background-size: 100% 100%; z-index: 2; pointer-events: none;
+}
+.draggable-text {
+    position: absolute; cursor: move; z-index: 3; white-space: normal;
+    color: white; text-shadow: 2px 2px 4px #000; font-weight: bold;
+    text-align: center; display: flex; align-items: center; justify-content: center;
+    word-break: break-word; line-height: 1.2;
+}
+
+/* UI Panel */
+.ui-panel {
+    background: #1e293b; padding: 20px; border-radius: 16px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;
+    width: 950px; margin: 20px auto 0; border: 1px solid var(--border-color);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+.input-group { display: flex; flex-direction: column; gap: 5px; background: #0f172a; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); }
+.input-group label { font-size: 11px; color: #63b3ed; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+.input-group input { padding: 8px; background: #1e293b; color: white; border: 1px solid var(--border-color); border-radius: 4px; font-family: 'Poppins', sans-serif; }
+.input-group input:focus { outline: none; border-color: var(--accent-color); }
+.btn {
+    background-color: var(--accent-color); color: white; border: none;
+    padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: 0.3s; width: 100%;
+    font-family: 'Poppins', 'Mukta Malar', sans-serif; font-size: 14px;
+}
+.btn:hover { filter: brightness(1.2); }
+
+/* ── Sidebar Layout ── */
+.app-shell { display: flex; min-height: 100vh; }
+.sidebar {
+    width: 220px; min-width: 220px;
+    background: #111827;
+    border-right: 1px solid #1e293b;
+    display: flex; flex-direction: column;
+    position: fixed; top: 0; left: 0;
+    height: 100vh; z-index: 1000;
+    overflow-y: auto; transition: transform 0.3s ease;
+}
+.sidebar-logo {
+    padding: 22px 18px 16px;
+    border-bottom: 1px solid #1e293b;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 8px;
+}
+.sidebar-logo img { width: 42px; filter: drop-shadow(0 0 8px rgba(59,130,246,0.5)); }
+.sidebar-logo span { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; color: #3b82f6; text-transform: uppercase; }
+.sidebar-nav { flex: 1; padding: 12px 10px; display: flex; flex-direction: column; gap: 4px; }
+.sidebar-nav a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 10px;
+    text-decoration: none; color: #94a3b8;
+    font-size: 0.8rem; font-weight: 600;
+    transition: all 0.2s ease; border: 1px solid transparent;
+    font-family: 'Poppins', sans-serif;
+}
+.sidebar-nav a i { width: 16px; text-align: center; font-size: 0.85rem; flex-shrink: 0; }
+.sidebar-nav a:hover { background: #1e293b; color: #f8fafc; border-color: #334155; }
+.sidebar-nav a.active { background: rgba(59,130,246,0.15); color: #3b82f6; border-color: rgba(59,130,246,0.3); }
+.sidebar-nav a.active i { color: #3b82f6; }
+.sidebar-divider { height: 1px; background: #1e293b; margin: 8px 10px; }
+.sidebar-section-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #475569; padding: 6px 12px 4px; }
+.sidebar-toggle {
+    display: none; position: fixed; top: 14px; left: 14px;
+    z-index: 1100; background: #1e293b; border: 1px solid #334155;
+    color: #fff; width: 40px; height: 40px; border-radius: 10px;
+    cursor: pointer; align-items: center; justify-content: center; font-size: 16px;
+}
+.sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 999; }
+.main-content { margin-left: 220px; flex: 1; min-width: 0; padding: 20px; box-sizing: border-box; }
+@media (max-width: 768px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-toggle { display: flex; }
+    .sidebar-overlay.open { display: block; }
+    .main-content { margin-left: 0; padding: 20px 15px; padding-top: 65px; }
+}
+
+/* body needs margin reset */
+body { margin: 0; }
+.back-btn, .top-right-btn { display: none !important; }
+</style>
+</head>
+<body>
+
+<button class="sidebar-toggle" onclick="toggleSidebar()" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <img src="https://ripbook.github.io/contentHelp/ripbook_logo.png" alt="RIPBOOK Logo">
+            <span>Content Help</span>
+        </div>
+        <nav class="sidebar-nav">
+<a href="index.html"><i class="fas fa-home"></i> Dashboard</a>
+<div class="sidebar-divider"></div><div class="sidebar-section-label">Tools</div>
+<a href="copy-texts.html"><i class="fas fa-file-alt"></i> Obituary &amp; Live Text</a>
+<a href="thumbnail.html" class="active"><i class="fas fa-paintbrush"></i> Create Thumbnail</a>
+<a href="photo-crop.html"><i class="fas fa-crop-alt"></i> Photo Crop &amp; WM</a>
+<a href="QRgenarator.html"><i class="fas fa-qrcode"></i> QR Generator</a>
+<a href="photo-resizer.html"><i class="fas fa-expand-arrows-alt"></i> Bulk Resizer</a>
+<div class="sidebar-divider"></div><div class="sidebar-section-label">Utilities</div>
+<a href="time-converter.html"><i class="fas fa-clock"></i> Time Converter</a>
+<a href="important-links.html"><i class="fas fa-link"></i> Important Links</a>
+<a href="converters.html"><i class="fab fa-youtube"></i> Link Converters</a>
+<a href="price-details.html"><i class="fas fa-tags"></i> Price Details</a>
+
+
+        </nav>
+    </aside>
+    <main class="main-content">
+
+<div class="container">
+    <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Home</a>
+    <div class="logo-container">
+        <img src="https://ripbook.github.io/contentHelp/ripbook_logo.png" alt="RIPBOOK Logo" class="main-logo">
+    </div>
+    <div class="header">
+        <h1>Live Thumbnail Designer</h1>
+        <p> Standard Resolution (1280x720)</p>
+    </div>
+
+    <div style="display:flex; justify-content:center;">
+        <div id="canvas-container">
+            <div id="photo-window"><div id="photo-display"></div></div>
+            <div id="background-layer"></div>
+            <div id="name-box" class="draggable-text" contenteditable="true" style="top:150px;left:480px;width:750px;min-height:100px;font-size:38px;">திரு சோமசுந்தரம் சுப்பிரமணியம்</div>
+            <div id="date-box" class="draggable-text" contenteditable="true" style="top:435px;left:515px;width:300px;font-size:32px;">02-02-2026</div>
+            <div id="time-box" class="draggable-text" contenteditable="true" style="top:435px;left:874px;width:300px;font-size:32px;">- 08:30 AM -</div>
+        </div>
+    </div>
+
+    <div class="ui-panel">
+        <div class="input-group">
+            <label>Upload Photo</label>
+            <input type="file" id="thumb-upload" style="color:#94a3b8;">
+        </div>
+        <div class="input-group">
+            <label>Photo Zoom</label>
+            <input type="range" id="zoom-photo" min="100" max="400" value="100" style="accent-color:#3b82f6;">
+        </div>
+        <div class="input-group">
+            <label>Name Font Size</label>
+            <input type="range" id="size-name" min="10" max="100" value="38" style="accent-color:#3b82f6;">
+        </div>
+        <div class="input-group">
+            <label>Date</label>
+            <input type="date" id="input-date" style="background:#1e293b;color:#fff;border:1px solid #334155;">
+        </div>
+        <div class="input-group">
+            <label>Time</label>
+            <input type="time" id="input-time" style="background:#1e293b;color:#fff;border:1px solid #334155;">
+        </div>
+        <button onclick="resetTextPositions()" style="background:#e53e3e;color:white;border:none;padding:10px;cursor:pointer;font-weight:bold;border-radius:8px;font-family:'Poppins',sans-serif;">
+            <i class="fas fa-undo"></i> RESET POSITIONS
+        </button>
+        <button onclick="downloadThumbnail()" style="grid-column:span 3;background:#27ae60;color:white;border:none;padding:18px;cursor:pointer;font-size:18px;font-weight:bold;border-radius:8px;margin-top:10px;font-family:'Poppins',sans-serif;box-shadow:0 4px 14px rgba(0,0,0,0.3);">
+            <i class="fas fa-download"></i> DOWNLOAD FINAL THUMBNAIL
+        </button>
+    </div>
+</div>
+<script>
+const thumbDisplay = document.getElementById('photo-display');
+const nameBox = document.getElementById('name-box');
+const dateBox = document.getElementById('date-box');
+const timeBox = document.getElementById('time-box');
+
+document.getElementById('thumb-upload').onchange = function(e) {
+    const r = new FileReader();
+    r.onload = ev => { thumbDisplay.style.backgroundImage = `url(${ev.target.result})`; };
+    r.readAsDataURL(e.target.files[0]);
+};
+document.getElementById('zoom-photo').oninput = e => { thumbDisplay.style.backgroundSize = e.target.value + '%'; };
+document.getElementById('size-name').oninput = e => { nameBox.style.fontSize = e.target.value + 'px'; };
+document.getElementById('input-date').onchange = e => {
+    const [y,m,d] = e.target.value.split('-');
+    dateBox.innerText = `${d}-${m}-${y}`;
+};
+document.getElementById('input-time').onchange = e => {
+    let [h, m] = e.target.value.split(':');
+    let ampm = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
+    timeBox.innerText = `- ${h}:${m} ${ampm} -`;
+};
+function resetTextPositions() {
+    nameBox.style.top='150px'; nameBox.style.left='480px'; nameBox.style.fontSize='38px';
+    dateBox.style.top='435px'; dateBox.style.left='515px';
+    timeBox.style.top='435px'; timeBox.style.left='874px';
+}
+function makeDraggable(el) {
+    let p1,p2,p3,p4;
+    el.onmousedown = e => {
+        if(e.target.contentEditable==='true' && e.target===document.activeElement) return;
+        p3=e.clientX; p4=e.clientY;
+        document.onmouseup = () => { document.onmouseup=null; document.onmousemove=null; };
+        document.onmousemove = e => {
+            p1=p3-e.clientX; p2=p4-e.clientY; p3=e.clientX; p4=e.clientY;
+            el.style.top=(el.offsetTop-p2)+'px'; el.style.left=(el.offsetLeft-p1)+'px';
+        };
+    };
+}
+makeDraggable(nameBox); makeDraggable(dateBox); makeDraggable(timeBox); makeDraggable(thumbDisplay);
+function downloadThumbnail() {
+    document.activeElement.blur();
+    html2canvas(document.getElementById('canvas-container'), { useCORS:true, scale:2 }).then(cvs => {
+        const a = document.createElement('a'); a.download='RIPBOOK_Thumbnail.png'; a.href=cvs.toDataURL(); a.click();
+    });
+}
+</script>
+    </main>
+</div>
+
+<script>
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('open');
+}
+function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+}
+</script>
+
+</body>
+</html>
