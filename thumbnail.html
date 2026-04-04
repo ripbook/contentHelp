@@ -37,7 +37,7 @@ body {
 }
 .header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 5px; }
 .back-btn {
-     top: 0; right: 0;
+    top: 0; right: 0;
     background-color: #334155; color: white; padding: 10px 20px;
     border-radius: 8px; text-decoration: none; font-size: 14px;
     font-weight: 600; display: flex; align-items: center; gap: 8px;
@@ -51,8 +51,19 @@ body {
     overflow: hidden; border: 1px solid #444; transform: scale(0.65);
     transform-origin: top center; margin-bottom: -220px;
 }
-#photo-window { position: absolute; top: 20px; left: 52px; width: 393px; height: 700px; z-index: 1; overflow: hidden; }
-#photo-display { width: 100%; height: 100%; cursor: move; position: absolute; background-size: cover; background-position: center; }
+#photo-window {
+    position: absolute; top: 20px; left: 52px;
+    width: 393px; height: 700px; z-index: 1; overflow: hidden;
+    cursor: grab;
+}
+#photo-window:active { cursor: grabbing; }
+#photo-display {
+    width: 100%; height: 100%;
+    position: absolute;
+    background-size: 100%;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+}
 #background-layer {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     background-image: url('https://eaglenithu.github.io/Documents/Livebg3.png');
@@ -65,53 +76,49 @@ body {
     word-break: break-word; line-height: 1.2;
 }
 
-/* UI Panel */
+/* UI Panel — 10-column grid */
 .ui-panel {
     background: #1e293b; padding: 20px; border-radius: 16px;
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 12px;
     width: 950px; margin: 20px auto 0; border: 1px solid var(--border-color);
     box-shadow: 0 10px 25px rgba(0,0,0,0.3);
 }
-.input-group { display: flex; flex-direction: column; gap: 5px; background: #0f172a; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); }
-.input-group label { font-size: 11px; color: #63b3ed; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
-.input-group input { padding: 8px; background: #1e293b; color: white; border: 1px solid var(--border-color); border-radius: 4px; font-family: 'Poppins', sans-serif; }
-.input-group input:focus { outline: none; border-color: var(--accent-color); }
-.btn {
-    background-color: var(--accent-color); color: white; border: none;
-    padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    transition: 0.3s; width: 100%;
-    font-family: 'Poppins', 'Mukta Malar', sans-serif; font-size: 14px;
+.input-group {
+    display: flex; flex-direction: column; gap: 5px;
+    background: #0f172a; padding: 10px; border-radius: 8px;
+    border: 1px solid var(--border-color);
+    min-width: 0; overflow: hidden;
 }
-.btn:hover { filter: brightness(1.2); }
+.input-group label { font-size: 11px; color: #63b3ed; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+.input-group input {
+    padding: 8px; background: #1e293b; color: white;
+    border: 1px solid var(--border-color); border-radius: 4px;
+    font-family: 'Poppins', sans-serif;
+    width: 100%; box-sizing: border-box; min-width: 0;
+}
+.input-group input:focus { outline: none; border-color: var(--accent-color); }
 
-/* ── Sidebar Layout ── */
+/* Sidebar */
 .app-shell { display: flex; min-height: 100vh; }
 .sidebar {
-    width: 220px; min-width: 220px;
-    background: #111827;
-    border-right: 1px solid #1e293b;
-    display: flex; flex-direction: column;
-    position: fixed; top: 0; left: 0;
-    height: 100vh; z-index: 1000;
+    width: 220px; min-width: 220px; background: #111827;
+    border-right: 1px solid #1e293b; display: flex; flex-direction: column;
+    position: fixed; top: 0; left: 0; height: 100vh; z-index: 1000;
     overflow-y: auto; transition: transform 0.3s ease;
 }
 .sidebar-logo {
-    padding: 22px 18px 16px;
-    border-bottom: 1px solid #1e293b;
-    display: flex; flex-direction: column;
-    align-items: center; gap: 8px;
+    padding: 22px 18px 16px; border-bottom: 1px solid #1e293b;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
 }
 .sidebar-logo img { width: 42px; filter: drop-shadow(0 0 8px rgba(59,130,246,0.5)); }
 .sidebar-logo span { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; color: #3b82f6; text-transform: uppercase; }
 .sidebar-nav { flex: 1; padding: 12px 10px; display: flex; flex-direction: column; gap: 4px; }
 .sidebar-nav a {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 12px; border-radius: 10px;
-    text-decoration: none; color: #94a3b8;
-    font-size: 0.8rem; font-weight: 600;
-    transition: all 0.2s ease; border: 1px solid transparent;
-    font-family: 'Poppins', sans-serif;
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px;
+    text-decoration: none; color: #94a3b8; font-size: 0.8rem; font-weight: 600;
+    transition: all 0.2s ease; border: 1px solid transparent; font-family: 'Poppins', sans-serif;
 }
 .sidebar-nav a i { width: 16px; text-align: center; font-size: 0.85rem; flex-shrink: 0; }
 .sidebar-nav a:hover { background: #1e293b; color: #f8fafc; border-color: #334155; }
@@ -120,10 +127,10 @@ body {
 .sidebar-divider { height: 1px; background: #1e293b; margin: 8px 10px; }
 .sidebar-section-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #475569; padding: 6px 12px 4px; }
 .sidebar-toggle {
-    display: none; position: fixed; top: 14px; left: 14px;
-    z-index: 1100; background: #1e293b; border: 1px solid #334155;
-    color: #fff; width: 40px; height: 40px; border-radius: 10px;
-    cursor: pointer; align-items: center; justify-content: center; font-size: 16px;
+    display: none; position: fixed; top: 14px; left: 14px; z-index: 1100;
+    background: #1e293b; border: 1px solid #334155; color: #fff;
+    width: 40px; height: 40px; border-radius: 10px; cursor: pointer;
+    align-items: center; justify-content: center; font-size: 16px;
 }
 .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 999; }
 .main-content { margin-left: 220px; flex: 1; min-width: 0; padding: 20px; box-sizing: border-box; }
@@ -134,8 +141,6 @@ body {
     .sidebar-overlay.open { display: block; }
     .main-content { margin-left: 0; padding: 20px 15px; padding-top: 65px; }
 }
-
-/* body needs margin reset */
 body { margin: 0; }
 .back-btn, .top-right-btn { display: none !important; }
 </style>
@@ -151,20 +156,20 @@ body { margin: 0; }
             <span>Content Help</span>
         </div>
         <nav class="sidebar-nav">
-<a href="index.html"><i class="fas fa-home"></i> Dashboard</a>
-<div class="sidebar-divider"></div><div class="sidebar-section-label">Tools</div>
-<a href="copy-texts.html"><i class="fas fa-file-alt"></i> Obituary &amp; Live Text</a>
-<a href="thumbnail.html" class="active"><i class="fas fa-paintbrush"></i> Create Thumbnail</a>
-<a href="photo-crop.html"><i class="fas fa-crop-alt"></i> Photo Crop &amp; WM</a>
-<a href="QRgenarator.html"><i class="fas fa-qrcode"></i> QR Generator</a>
-<a href="photo-resizer.html"><i class="fas fa-expand-arrows-alt"></i> Bulk Resizer</a>
-<div class="sidebar-divider"></div><div class="sidebar-section-label">Utilities</div>
-<a href="time-converter.html"><i class="fas fa-clock"></i> Time Converter</a>
-<a href="important-links.html"><i class="fas fa-link"></i> Important Links</a>
-<a href="converters.html"><i class="fab fa-youtube"></i> Link Converters</a>
-<a href="price-details.html"><i class="fas fa-tags"></i> Price Details</a>
-
-
+            <a href="index.html"><i class="fas fa-home"></i> Dashboard</a>
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-section-label">Tools</div>
+            <a href="copy-texts.html"><i class="fas fa-file-alt"></i> Obituary &amp; Live Text</a>
+            <a href="thumbnail.html" class="active"><i class="fas fa-paintbrush"></i> Create Thumbnail</a>
+            <a href="photo-crop.html"><i class="fas fa-crop-alt"></i> Photo Crop &amp; WM</a>
+            <a href="QRgenarator.html"><i class="fas fa-qrcode"></i> QR Generator</a>
+            <a href="photo-resizer.html"><i class="fas fa-expand-arrows-alt"></i> Bulk Resizer</a>
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-section-label">Utilities</div>
+            <a href="time-converter.html"><i class="fas fa-clock"></i> Time Converter</a>
+            <a href="important-links.html"><i class="fas fa-link"></i> Important Links</a>
+            <a href="converters.html"><i class="fab fa-youtube"></i> Link Converters</a>
+            <a href="price-details.html"><i class="fas fa-tags"></i> Price Details</a>
         </nav>
     </aside>
     <main class="main-content">
@@ -174,14 +179,16 @@ body { margin: 0; }
     <div class="logo-container">
         <img src="https://ripbook.github.io/contentHelp/ripbook_logo.png" alt="RIPBOOK Logo" class="main-logo">
     </div>
-    <div class="header">
+     <div class="header">
         <h1>Live Thumbnail Designer</h1>
         <p> Standard Resolution (1280x720)</p>
     </div>
 
     <div style="display:flex; justify-content:center;">
         <div id="canvas-container">
-            <div id="photo-window"><div id="photo-display"></div></div>
+            <div id="photo-window">
+                <div id="photo-display"></div>
+            </div>
             <div id="background-layer"></div>
             <div id="name-box" class="draggable-text" contenteditable="true" style="top:150px;left:480px;width:750px;min-height:100px;font-size:38px;">திரு சோமசுந்தரம் சுப்பிரமணியம்</div>
             <div id="date-box" class="draggable-text" contenteditable="true" style="top:435px;left:515px;width:300px;font-size:32px;">02-02-2026</div>
@@ -190,47 +197,93 @@ body { margin: 0; }
     </div>
 
     <div class="ui-panel">
-        <div class="input-group">
+
+        <!-- ROW 1 -->
+        <div class="input-group" style="grid-column:span 4; padding:8px;">
             <label>Upload Photo</label>
-            <input type="file" id="thumb-upload" style="color:#94a3b8;">
+            <input type="file" id="thumb-upload" style="color:#94a3b8; font-size:11px; padding:5px;">
         </div>
-        <div class="input-group">
+
+        <div class="input-group" style="grid-column:span 2;">
             <label>Photo Zoom</label>
             <input type="range" id="zoom-photo" min="100" max="400" value="100" style="accent-color:#3b82f6;">
         </div>
-        <div class="input-group">
-            <label>Name Font Size</label>
+
+        <div class="input-group" style="grid-column:span 2;">
+            <label style="font-size:10px;">Name Size</label>
             <input type="range" id="size-name" min="10" max="100" value="38" style="accent-color:#3b82f6;">
         </div>
-        <div class="input-group">
-            <label>Date</label>
-            <input type="date" id="input-date" style="background:#1e293b;color:#fff;border:1px solid #334155;">
+
+        <div class="input-group" style="grid-column:span 2; padding:8px;">
+            <label style="font-size:10px;">Date</label>
+            <input type="date" id="input-date" style="background:#1e293b;color:#fff;border:1px solid #334155;font-size:11px;">
         </div>
-        <div class="input-group">
-            <label>Time</label>
-            <input type="time" id="input-time" style="background:#1e293b;color:#fff;border:1px solid #334155;">
+
+        <!-- ROW 2 -->
+        <button id="editToggleBtn" onclick="toggleEditMode()"
+            style="grid-column:span 2; background:#334155; color:#94a3b8; border:1px solid #475569;
+                   padding:6px 4px; cursor:pointer; font-weight:600; border-radius:8px;
+                   font-family:'Poppins',sans-serif; font-size:11px;
+                   display:flex; align-items:center; justify-content:center; gap:4px; transition:all 0.2s;">
+            <i class="fas fa-lock" id="editIcon"></i><span id="editLabel">Edit Position</span>
+        </button>
+
+        <button onclick="resetAll()"
+            style="grid-column:span 2; background:#e53e3e; color:white; border:none; padding:10px;
+                   cursor:pointer; font-weight:bold; border-radius:8px;
+                   font-family:'Poppins',sans-serif; font-size:12px;">
+            <i class="fas fa-undo"></i> RESET
+        </button>
+
+        <div class="input-group" style="grid-column:span 2; padding:8px;">
+            <label style="font-size:10px;">Time</label>
+            <input type="time" id="input-time" style="background:#1e293b;color:#fff;border:1px solid #334155;font-size:11px;">
         </div>
-        <button onclick="resetTextPositions()" style="background:#e53e3e;color:white;border:none;padding:10px;cursor:pointer;font-weight:bold;border-radius:8px;font-family:'Poppins',sans-serif;">
-            <i class="fas fa-undo"></i> RESET POSITIONS
+
+        <button onclick="downloadThumbnail()"
+            style="grid-column:span 4; background:#27ae60; color:white; border:none; padding:14px;
+                   cursor:pointer; font-size:14px; font-weight:bold; border-radius:8px;
+                   font-family:'Poppins',sans-serif; box-shadow:0 4px 14px rgba(0,0,0,0.3);">
+            <i class="fas fa-download"></i> DOWNLOAD THUMBNAIL
         </button>
-        <button onclick="downloadThumbnail()" style="grid-column:span 3;background:#27ae60;color:white;border:none;padding:18px;cursor:pointer;font-size:18px;font-weight:bold;border-radius:8px;margin-top:10px;font-family:'Poppins',sans-serif;box-shadow:0 4px 14px rgba(0,0,0,0.3);">
-            <i class="fas fa-download"></i> DOWNLOAD FINAL THUMBNAIL
-        </button>
+
     </div>
 </div>
+
 <script>
+const photoWindow = document.getElementById('photo-window');
 const thumbDisplay = document.getElementById('photo-display');
 const nameBox = document.getElementById('name-box');
 const dateBox = document.getElementById('date-box');
 const timeBox = document.getElementById('time-box');
+const canvasCont = document.getElementById('canvas-container');
 
+let posX = 0, posY = 0;
+let zoomVal = 100;
+
+function applyPos() {
+    thumbDisplay.style.backgroundPosition = `calc(50% + ${posX}px) calc(50% + ${posY}px)`;
+}
+
+// Upload
 document.getElementById('thumb-upload').onchange = function(e) {
     const r = new FileReader();
-    r.onload = ev => { thumbDisplay.style.backgroundImage = `url(${ev.target.result})`; };
+    r.onload = ev => {
+        thumbDisplay.style.backgroundImage = `url(${ev.target.result})`;
+        posX = 0; posY = 0;
+        applyPos();
+    };
     r.readAsDataURL(e.target.files[0]);
 };
-document.getElementById('zoom-photo').oninput = e => { thumbDisplay.style.backgroundSize = e.target.value + '%'; };
+
+// Zoom
+document.getElementById('zoom-photo').oninput = e => {
+    zoomVal = e.target.value;
+    thumbDisplay.style.backgroundSize = zoomVal + '%';
+};
+
 document.getElementById('size-name').oninput = e => { nameBox.style.fontSize = e.target.value + 'px'; };
+
 document.getElementById('input-date').onchange = e => {
     const [y,m,d] = e.target.value.split('-');
     dateBox.innerText = `${d}-${m}-${y}`;
@@ -240,29 +293,197 @@ document.getElementById('input-time').onchange = e => {
     let ampm = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
     timeBox.innerText = `- ${h}:${m} ${ampm} -`;
 };
-function resetTextPositions() {
+
+// Reset — fixes: resets photo zoom, position, and name size slider
+function resetAll() {
     nameBox.style.top='150px'; nameBox.style.left='480px'; nameBox.style.fontSize='38px';
     dateBox.style.top='435px'; dateBox.style.left='515px';
     timeBox.style.top='435px'; timeBox.style.left='874px';
+
+    posX = 0; posY = 0; zoomVal = 100;
+    thumbDisplay.style.backgroundSize = '100%';
+    thumbDisplay.style.backgroundPosition = '50% 50%';
+    document.getElementById('zoom-photo').value = 100;
+    document.getElementById('size-name').value = 38;
 }
+
+// Photo drag via background-position offset
+(function() {
+    let dragging = false;
+    let lastX, lastY;
+
+    photoWindow.addEventListener('mousedown', e => {
+        dragging = true;
+        lastX = e.clientX;
+        lastY = e.clientY;
+        e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', e => {
+        if (!dragging) return;
+        const cssScale = canvasCont.getBoundingClientRect().width / 1280;
+        const dx = (e.clientX - lastX) / cssScale;
+        const dy = (e.clientY - lastY) / cssScale;
+        posX += dx;
+        posY += dy;
+        applyPos();
+        lastX = e.clientX;
+        lastY = e.clientY;
+    });
+
+    document.addEventListener('mouseup', () => { dragging = false; });
+})();
+
+// Edit Position Toggle
+let editMode = false;
+function toggleEditMode() {
+    editMode = !editMode;
+    const btn   = document.getElementById('editToggleBtn');
+    const icon  = document.getElementById('editIcon');
+    const label = document.getElementById('editLabel');
+    if (editMode) {
+        btn.style.background = '#3b82f6';
+        btn.style.color = '#fff';
+        btn.style.borderColor = '#3b82f6';
+        icon.className = 'fas fa-unlock';
+        label.textContent = 'Editing ON';
+        [nameBox, dateBox, timeBox].forEach(el => {
+            el.style.cursor = 'move';
+            el.style.outline = '2px dashed rgba(59,130,246,0.7)';
+        });
+    } else {
+        btn.style.background = '#334155';
+        btn.style.color = '#94a3b8';
+        btn.style.borderColor = '#475569';
+        icon.className = 'fas fa-lock';
+        label.textContent = 'Edit Position';
+        [nameBox, dateBox, timeBox].forEach(el => {
+            el.style.cursor = 'default';
+            el.style.outline = 'none';
+        });
+    }
+}
+
+// Draggable text boxes (scale-corrected)
 function makeDraggable(el) {
     let p1,p2,p3,p4;
     el.onmousedown = e => {
-        if(e.target.contentEditable==='true' && e.target===document.activeElement) return;
-        p3=e.clientX; p4=e.clientY;
-        document.onmouseup = () => { document.onmouseup=null; document.onmousemove=null; };
+        if (!editMode) return;
+        if (e.target.contentEditable === 'true' && e.target === document.activeElement) return;
+        p3 = e.clientX; p4 = e.clientY;
+        document.onmouseup = () => { document.onmouseup = null; document.onmousemove = null; };
         document.onmousemove = e => {
-            p1=p3-e.clientX; p2=p4-e.clientY; p3=e.clientX; p4=e.clientY;
-            el.style.top=(el.offsetTop-p2)+'px'; el.style.left=(el.offsetLeft-p1)+'px';
+            const cssScale = canvasCont.getBoundingClientRect().width / 1280;
+            p1 = (p3 - e.clientX) / cssScale;
+            p2 = (p4 - e.clientY) / cssScale;
+            p3 = e.clientX; p4 = e.clientY;
+            el.style.top  = (el.offsetTop  - p2) + 'px';
+            el.style.left = (el.offsetLeft - p1) + 'px';
         };
     };
 }
-makeDraggable(nameBox); makeDraggable(dateBox); makeDraggable(timeBox); makeDraggable(thumbDisplay);
+makeDraggable(nameBox);
+makeDraggable(dateBox);
+makeDraggable(timeBox);
+
+// Download — native Canvas API (no html2canvas)
 function downloadThumbnail() {
     document.activeElement.blur();
-    html2canvas(document.getElementById('canvas-container'), { useCORS:true, scale:2 }).then(cvs => {
-        const a = document.createElement('a'); a.download='RIPBOOK_Thumbnail.png'; a.href=cvs.toDataURL(); a.click();
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 1280;
+    canvas.height = 720;
+    const ctx = canvas.getContext('2d');
+
+    const bgImg = new Image();
+    bgImg.crossOrigin = 'anonymous';
+    bgImg.onload = function() {
+
+        function drawBackground() {
+            // Draw overlay PNG
+            ctx.drawImage(bgImg, 0, 0, 1280, 720);
+
+            // Draw text boxes
+            function drawBox(el) {
+    const fs = parseFloat(el.style.fontSize || '32');
+    const top = parseFloat(el.style.top || '0');
+    const left = parseFloat(el.style.left || '0');
+    const width = parseFloat(el.style.width || '300');
+    const height = parseFloat(el.style.height || el.offsetHeight || (fs * 1.5));
+
+    ctx.save();
+    ctx.font = `bold ${fs}px 'Poppins', 'Mukta Malar', sans-serif`;
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'center';
+    ctx.shadowColor = '#000';
+    ctx.shadowBlur = 4;
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 2;
+
+    // Word-wrap
+    const words = el.innerText.split(' ');
+    let line = '', lines = [];
+    for (let w of words) {
+        const test = line + w + ' ';
+        if (ctx.measureText(test).width > width && line) {
+            lines.push(line.trim()); line = w + ' ';
+        } else { line = test; }
+    }
+    lines.push(line.trim());
+
+    const lineH = fs * 1.3;
+    const totalH = lines.length * lineH;
+
+    // Match browser's flexbox centering: vertically center block within the element's rendered height
+    const elHeight = el.offsetHeight;
+    const startY = top + (elHeight - totalH) / 2 + fs * 0.85; // 0.85 accounts for ascender
+
+    lines.forEach((l, i) => {
+        ctx.fillText(l, left + width / 2, startY + i * lineH);
     });
+
+    ctx.restore();
+}
+
+            drawBox(nameBox);
+            drawBox(dateBox);
+            drawBox(timeBox);
+
+            const a = document.createElement('a');
+            a.download = 'RIPBOOK_Thumbnail.png';
+            a.href = canvas.toDataURL('image/png');
+            a.click();
+        }
+
+        const photoSrc = thumbDisplay.style.backgroundImage.replace(/url\(["']?/, '').replace(/["']?\)$/, '');
+        const photoSizeVal = parseFloat(thumbDisplay.style.backgroundSize || '100') / 100;
+
+        if (photoSrc && photoSrc !== 'none' && photoSrc !== '') {
+            const photo = new Image();
+            photo.onload = function() {
+                const pw = 393, ph = 700, px = 52, py = 20;
+                ctx.save();
+                ctx.beginPath();
+                ctx.rect(px, py, pw, ph);
+                ctx.clip();
+                const scaleBase = pw / photo.naturalWidth;
+                const drawW = photo.naturalWidth * scaleBase * photoSizeVal;
+                const drawH = photo.naturalHeight * scaleBase * photoSizeVal;
+                const dx = px + pw / 2 - drawW / 2 + posX;
+                const dy = py + ph / 2 - drawH / 2 + posY;
+                ctx.drawImage(photo, dx, dy, drawW, drawH);
+                ctx.restore();
+                drawBackground();
+            };
+            photo.src = photoSrc;
+        } else {
+            drawBackground();
+        }
+    };
+    bgImg.onerror = function() {
+        alert('Failed to load background image. Check your internet connection.');
+    };
+    bgImg.src = 'https://eaglenithu.github.io/Documents/Livebg3.png';
 }
 </script>
     </main>
