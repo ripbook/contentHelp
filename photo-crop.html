@@ -95,6 +95,54 @@ body {
 .controls-col { flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 15px; }
 .hint { font-size: 11px; color: var(--text-muted); margin: 8px 0 0; line-height: 1.5; font-weight: 400; text-transform: none; letter-spacing: 0; }
 
+/* ── Paste box (under Choose File) ── */
+.paste-box {
+    margin-top: 10px; min-height: 52px; box-sizing: border-box;
+    border: 2px dashed var(--border-color); border-radius: 8px;
+    background: #1e293b; color: var(--text-muted);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    text-align: center; font-size: 12px; font-weight: 600; line-height: 1.4;
+    padding: 8px 10px; cursor: pointer; outline: none;
+    transition: border-color 0.2s, background 0.2s, color 0.2s;
+    caret-color: transparent; user-select: none; -webkit-user-select: none;
+}
+.paste-box:hover { border-color: #475569; color: #cbd5e1; }
+.paste-box:focus, .paste-box.ready { border-color: var(--accent-color); background: rgba(59,130,246,0.1); color: #fff; }
+.paste-box.done { border-color: #27ae60; background: rgba(39,174,96,0.12); color: #fff; }
+.paste-box i { color: var(--accent-color); }
+.paste-box.done i { color: #27ae60; }
+
+/* ── Zoom row: Set button on the left of the zoom slider ── */
+.zoom-row { display: flex; align-items: center; gap: 12px; margin-top: 5px; }
+.set-btn {
+    background: #f59e0b; color: #fff; border: none; border-radius: 8px;
+    padding: 9px 18px; font-size: 13px; font-weight: 600; cursor: pointer;
+    font-family: 'Poppins', 'Mukta Malar', sans-serif; display: inline-flex;
+    align-items: center; gap: 6px; white-space: nowrap; transition: 0.3s; flex-shrink: 0;
+}
+.set-btn:hover { filter: brightness(1.15); }
+.set-btn.is-set { background: #27ae60; }
+.zoom-row input[type=range] { flex: 1; min-width: 0; accent-color: #3b82f6; margin: 0; }
+
+.rotate-toggle {
+    width: 38px; height: 38px; border-radius: 50%; margin-bottom: 12px;
+    background: #0f172a; color: #63b3ed; border: 1px solid var(--border-color);
+    cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center;
+    transition: 0.3s;
+}
+.rotate-toggle:hover { background: #1e293b; color: #fff; }
+.rotate-toggle.open { background: var(--accent-color); border-color: var(--accent-color); color: #fff; }
+.crop-actions { display: flex; gap: 10px; margin-top: 10px; }
+.crop-act-btn {
+    flex: 1; border: none; border-radius: 8px; padding: 10px; color: #fff;
+    font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.3s;
+    font-family: 'Poppins', 'Mukta Malar', sans-serif;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+}
+.crop-act-btn:hover { filter: brightness(1.2); }
+.crop-act-btn.clear { background: #ef4444; }
+.crop-act-btn.reset { background: #6366f1; }
+
 /* ── Sidebar Layout ── */
 .app-shell { display: flex; min-height: 100vh; }
 .sidebar {
@@ -190,7 +238,8 @@ body { margin: 0; }
     <div class="editor-body">
         <div class="canvas-col">
             <!-- Rotate bar above the preview: move left = rotate left, move right = rotate right -->
-            <div class="input-group rotate-group">
+            <button class="rotate-toggle" id="rotateToggle" onclick="toggleRotatePanel()" title="Rotate"><i class="fas fa-rotate"></i></button>
+            <div class="input-group rotate-group" id="rotatePanel" style="display:none;">
                 <div class="rotate-head">
                     <label for="rotateSlider"><i class="fas fa-rotate"></i> Rotate</label>
                     <span>
@@ -223,11 +272,26 @@ body { margin: 0; }
                     <i class="fas fa-image"></i> Choose File
                 </button>
                 <input type="file" id="crop-upload" accept="image/*" style="display:none;">
+
+                <!-- Click this box, then press Ctrl+V (or long-press > Paste on mobile) -->
+                <div class="paste-box" id="pasteBox" contenteditable="true" tabindex="0" spellcheck="false" title="Click here, then press Ctrl+V to paste an image">
+                    <i class="fas fa-paste"></i>
+                    <span id="pasteText">Click here &amp; press Ctrl+V to paste image</span>
+                </div>
             </div>
 
             <div class="input-group">
                 <label>2. Image Zoom</label>
-                <input type="range" id="zoomSlider" style="width:100%; margin-top:5px; accent-color:#3b82f6;" min="0.1" max="4" step="0.01" value="1">
+                <div class="zoom-row">
+                    <button class="set-btn" id="setBtn" onclick="setCroppedImage()" title="Crop to what you see in the preview and keep it for the next steps"><i class="fas fa-check"></i> Set</button>
+                    <input type="range" id="zoomSlider" min="0.1" max="4" step="0.01" value="1">
+                </div>
+                <p class="hint">Zoom / move the photo, then click <b>Set</b> to crop to what is in the preview. Do this before Remove BG.</p>
+                <!-- Appear after Set is done -->
+                <div class="crop-actions" id="cropActions" style="display:none;">
+                    <button class="crop-act-btn clear" onclick="clearCrop()" title="Go back to the photo you uploaded or pasted"><i class="fas fa-eraser"></i> Clear Crop</button>
+                    <button class="crop-act-btn reset" onclick="resetCrop()" title="Put the cropped photo back to the Set position"><i class="fas fa-arrows-rotate"></i> Reset Crop</button>
+                </div>
             </div>
 
             <div class="input-group">
@@ -265,6 +329,10 @@ const cropCanvas = new fabric.Canvas('cropCanvas', { preserveObjectStacking: tru
 const logoGrey  = 'https://eaglenithu.github.io/ripbookcontenthelp/RIP_Watermark1.png';
 const logoWhite = 'https://eaglenithu.github.io/ripbookcontenthelp/RIP_Watermark2.png';
 let uploadedCropImg = null, activeWM = null, baseScale = 1;
+// The current source photo (chosen file OR pasted image) - used by Remove BG
+let currentFile = null;
+// The photo exactly as uploaded/pasted (before Set) - used by Clear Crop
+let originalFile = null, originalDataUrl = null;
 
 // Objects can be dragged in the preview; resize/rotate handles are not used (zoom slider + rotate bar instead)
 function applyObjectState(obj) {
@@ -317,17 +385,101 @@ rotateValue.onkeydown = function(e) {
     if (e.key === 'Enter') { commitRotationInput(); this.blur(); }
 };
 
+// Rotate section is hidden by default; the icon button shows / hides it
+function toggleRotatePanel() {
+    const panel = document.getElementById('rotatePanel');
+    const open = panel.style.display === 'none';
+    panel.style.display = open ? 'flex' : 'none';
+    document.getElementById('rotateToggle').classList.toggle('open', open);
+}
+
 function resetRotation() {
     rotateSlider.value = 0;
     applyRotation(0);
 }
 
+// ── Load a photo (from Choose File OR paste) into the preview ──
+function loadImageFile(file, source) {
+    if (!file) return;
+    currentFile = file;
+    originalFile = file;
+    resetSetButton();
+    const r = new FileReader();
+    r.onload = ev => {
+        originalDataUrl = ev.target.result;   // kept so Clear Crop can go back to it
+        fabric.Image.fromURL(ev.target.result, img => setupCropImage(img));
+    };
+    r.readAsDataURL(file);
+    setPasteState(source === 'paste' ? 'done' : 'idle');
+}
+
 document.getElementById('crop-upload').onchange = function(e) {
     if (!e.target.files[0]) return;
-    const r = new FileReader();
-    r.onload = ev => { fabric.Image.fromURL(ev.target.result, img => setupCropImage(img)); };
-    r.readAsDataURL(e.target.files[0]);
+    loadImageFile(e.target.files[0], 'upload');
 };
+
+// ── Paste box ──
+const pasteBox = document.getElementById('pasteBox');
+const pasteText = document.getElementById('pasteText');
+
+function setPasteState(state) {
+    pasteBox.classList.remove('ready', 'done');
+    if (state === 'ready') {
+        pasteBox.classList.add('ready');
+        pasteText.textContent = 'Ready - now press Ctrl+V';
+    } else if (state === 'done') {
+        pasteBox.classList.add('done');
+        pasteText.textContent = 'Image pasted! Click here to paste another';
+    } else {
+        pasteText.textContent = 'Click here & press Ctrl+V to paste image';
+    }
+}
+
+// Find an image in clipboard data and load it
+function handlePasteEvent(e) {
+    const items = (e.clipboardData && e.clipboardData.items) || [];
+    for (let i = 0; i < items.length; i++) {
+        if (items[i].kind === 'file' && items[i].type.indexOf('image') === 0) {
+            const blob = items[i].getAsFile();
+            if (blob) {
+                e.preventDefault();
+                const ext = (blob.type.split('/')[1] || 'png').replace('jpeg', 'jpg');
+                const file = new File([blob], 'pasted-image.' + ext, { type: blob.type || 'image/png' });
+                loadImageFile(file, 'paste');
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+pasteBox.addEventListener('focus', () => { if (!pasteBox.classList.contains('done')) setPasteState('ready'); });
+pasteBox.addEventListener('blur', () => { if (!pasteBox.classList.contains('done')) setPasteState('idle'); });
+pasteBox.addEventListener('click', () => pasteBox.focus());
+
+pasteBox.addEventListener('paste', function(e) {
+    if (!handlePasteEvent(e)) {
+        e.preventDefault();
+        Swal.fire({ icon: 'info', title: 'No image found', text: 'Copy an image first (screenshot or Copy Image), then paste again.', background: '#1e293b', color: '#fff' });
+    }
+});
+
+// The box only accepts paste: block typing/dropping text into it
+pasteBox.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'v') return;
+    if (e.key === 'Tab') return;
+    e.preventDefault();
+});
+pasteBox.addEventListener('beforeinput', function(e) {
+    if (e.inputType !== 'insertFromPaste') e.preventDefault();
+});
+pasteBox.addEventListener('drop', e => e.preventDefault());
+
+// Bonus: Ctrl+V works anywhere on the page (except inside the rotate number box)
+document.addEventListener('paste', function(e) {
+    if (e.target === pasteBox || e.target === rotateValue) return;
+    handlePasteEvent(e);
+});
 
 function setupCropImage(img) {
     if (uploadedCropImg) cropCanvas.remove(uploadedCropImg);
@@ -349,11 +501,80 @@ function setupCropImage(img) {
 
 document.getElementById('zoomSlider').oninput = function() {
     if (!uploadedCropImg) return;
+    // Zoom around the photo's own center, so it stays where you dragged it
     uploadedCropImg.scale(baseScale * parseFloat(this.value));
-    uploadedCropImg.set({ left: cropCanvas.width / 2, top: cropCanvas.height / 2 });
     uploadedCropImg.setCoords();
     cropCanvas.renderAll();
 };
+
+// ── Set: crop to exactly what is in the preview and keep it temporarily ──
+// The cropped result replaces the working photo, so Remove BG, rotate, logo and save all use it.
+function setCroppedImage() {
+    if (!uploadedCropImg) {
+        Swal.fire({ icon: 'warning', title: 'Upload Photo', text: 'Please select or paste a photo first.', background: '#1e293b', color: '#fff' });
+        return;
+    }
+    cropCanvas.discardActiveObject();
+
+    // Hide the logo and any background colour so only the photo area is captured
+    const prevBg = cropCanvas.backgroundColor;
+    const prevWMOpacity = activeWM ? activeWM.opacity : 1;
+    if (activeWM) activeWM.set({ opacity: 0 });
+    cropCanvas.backgroundColor = null;
+    cropCanvas.renderAll();
+
+    // The guideline is an HTML overlay, so it is never included
+    const dataUrl = cropCanvas.toDataURL({ format: 'png', multiplier: 2 });
+
+    cropCanvas.backgroundColor = prevBg;
+    if (activeWM) activeWM.set({ opacity: prevWMOpacity });
+    cropCanvas.renderAll();
+
+    // Save the cropped image as the new working file (used by Remove BG)
+    fetch(dataUrl).then(r => r.blob()).then(blob => {
+        currentFile = new File([blob], 'cropped.png', { type: 'image/png' });
+    });
+
+    // Show the cropped image in the preview, straight and at 100% zoom
+    fabric.Image.fromURL(dataUrl, img => {
+        setupCropImage(img);
+        const btn = document.getElementById('setBtn');
+        btn.classList.add('is-set');
+        btn.innerHTML = '<i class="fas fa-check-double"></i> Set done';
+        document.getElementById('cropActions').style.display = 'flex';
+        Swal.fire({ icon: 'success', title: 'Cropped and Set', text: 'You can now use Remove BG or add the logo.', timer: 1400, showConfirmButton: false, background: '#1e293b', color: '#fff' });
+    });
+}
+
+function resetSetButton() {
+    const btn = document.getElementById('setBtn');
+    if (btn) {
+        btn.classList.remove('is-set');
+        btn.innerHTML = '<i class="fas fa-check"></i> Set';
+    }
+    document.getElementById('cropActions').style.display = 'none';
+}
+
+// Clear Crop: throw away the crop and go back to the photo you uploaded / pasted
+function clearCrop() {
+    if (!originalDataUrl) return;
+    currentFile = originalFile;
+    handleOriginal();                 // also clears any removed-BG colour controls
+    fabric.Image.fromURL(originalDataUrl, img => {
+        setupCropImage(img);          // original photo, centered, 100% zoom, straight
+        resetSetButton();
+    });
+}
+
+// Reset Crop: after you moved / zoomed / rotated, put the photo back to the Set position
+function resetCrop() {
+    if (!uploadedCropImg) return;
+    uploadedCropImg.set({ left: cropCanvas.width / 2, top: cropCanvas.height / 2 });
+    uploadedCropImg.scale(baseScale);
+    document.getElementById('zoomSlider').value = 1;
+    rotateSlider.value = 0;
+    applyRotation(0);                 // angle 0, updates the box, redraws
+}
 
 function handleOriginal() {
     document.getElementById('modeOriginal').classList.add('active');
@@ -397,9 +618,9 @@ async function tryRemoveBG(file, keyIndex) {
 }
 
 async function processRemoveBG() {
-    const fileInput = document.getElementById('crop-upload');
-    if (!fileInput.files[0]) {
-        Swal.fire({ icon: 'warning', title: 'Upload Photo', text: 'Please select a photo first.', background: '#1e293b', color: '#fff' });
+    // Works for both a chosen file and a pasted image
+    if (!currentFile) {
+        Swal.fire({ icon: 'warning', title: 'Upload Photo', text: 'Please select or paste a photo first.', background: '#1e293b', color: '#fff' });
         return;
     }
     document.getElementById('modeRemoveBG').classList.add('active');
@@ -418,7 +639,7 @@ async function processRemoveBG() {
     });
 
     try {
-        const blob = await tryRemoveBG(fileInput.files[0], 0);
+        const blob = await tryRemoveBG(currentFile, 0);
         // Keep the rotation the user already set when the background is removed
         const keepAngle = parseFloat(rotateSlider.value) || 0;
         fabric.Image.fromURL(URL.createObjectURL(blob), img => {
