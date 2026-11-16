@@ -49,9 +49,34 @@ body {
     border: 1px solid var(--border-color); box-shadow: 0 10px 25px rgba(0,0,0,0.3);
     display: flex; gap: 40px; align-items: flex-start; justify-content: center; flex-wrap: wrap;
 }
-.crop-canvas-area { background: #000; line-height: 0; border: 2px solid var(--border-color); border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+.canvas-col { width: 250px; max-width: 100%; }
+.crop-canvas-area { position: relative; background: #000; line-height: 0; border: 2px solid var(--border-color); border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+/* Guideline overlay: preview only (HTML layer above the canvas, never part of the download) */
+.guideline-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 20; object-fit: fill;
+}
 .input-group { display: flex; flex-direction: column; gap: 5px; background: #0f172a; padding: 15px; border-radius: 10px; border: 1px solid var(--border-color); }
 .input-group label { font-size: 11px; color: #63b3ed; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 5px; }
+/* Rotate bar above the preview */
+.rotate-group { margin-bottom: 15px; padding: 12px 15px; }
+.rotate-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px; }
+.rotate-head label { margin-bottom: 0; }
+.rotate-input-wrap { display: inline-flex; align-items: center; gap: 2px; }
+.rotate-value {
+    width: 62px; box-sizing: border-box; background: #1e293b; color: #fff;
+    border: 1px solid var(--border-color); border-radius: 6px; padding: 4px 6px;
+    font-size: 12px; font-weight: 600; text-align: right; font-family: 'Poppins', sans-serif;
+}
+.rotate-value:focus { outline: none; border-color: var(--accent-color); }
+.rotate-deg { font-size: 12px; font-weight: 600; color: #fff; }
+.rotate-reset {
+    background: #334155; color: #fff; border: 1px solid var(--border-color);
+    border-radius: 6px; padding: 3px 8px; font-size: 11px; font-weight: 600;
+    cursor: pointer; font-family: 'Poppins', sans-serif; margin-left: 8px;
+}
+.rotate-reset:hover { background: var(--accent-color); border-color: var(--accent-color); }
+.rotate-scale { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); margin-top: 2px; }
 .wm-toggle-bar { display: flex; gap: 10px; margin-top: 10px; }
 .wm-opt {
     flex: 1; padding: 10px; border: 1px solid var(--border-color);
@@ -68,6 +93,7 @@ body {
 }
 .btn:hover { filter: brightness(1.2); }
 .controls-col { flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 15px; }
+.hint { font-size: 11px; color: var(--text-muted); margin: 8px 0 0; line-height: 1.5; font-weight: 400; text-transform: none; letter-spacing: 0; }
 
 /* ── Sidebar Layout ── */
 .app-shell { display: flex; min-height: 100vh; }
@@ -162,10 +188,29 @@ body { margin: 0; }
     </div>
 
     <div class="editor-body">
-        <div>
-            <div class="crop-canvas-area">
-                <canvas id="cropCanvas" width="246" height="266"></canvas>
+        <div class="canvas-col">
+            <!-- Rotate bar above the preview: move left = rotate left, move right = rotate right -->
+            <div class="input-group rotate-group">
+                <div class="rotate-head">
+                    <label for="rotateSlider"><i class="fas fa-rotate"></i> Rotate</label>
+                    <span>
+                        <span class="rotate-input-wrap">
+                            <input type="number" class="rotate-value" id="rotateValue" min="-180" max="180" step="0.5" value="0" title="Type an angle from -180 to 180 and press Enter">
+                            <span class="rotate-deg">°</span>
+                        </span>
+                        <button class="rotate-reset" onclick="resetRotation()" title="Reset rotation to 0°">Reset</button>
+                    </span>
+                </div>
+                <input type="range" id="rotateSlider" style="width:100%; margin-top:5px; accent-color:#3b82f6;" min="-180" max="180" step="0.5" value="0">
+                <div class="rotate-scale"><span>&#8630; Left</span><span>Right &#8631;</span></div>
             </div>
+
+            <div class="crop-canvas-area" id="canvasArea">
+                <canvas id="cropCanvas" width="246" height="266"></canvas>
+                <!-- Preview-only guideline (not included in downloads) -->
+                <img id="guidelineImg" class="guideline-overlay" src="https://ripbook.github.io/contentHelp/guideline.png" alt="Guideline" crossorigin="anonymous">
+            </div>
+
             <button class="btn" style="background:#27ae60; padding:16px; font-size:15px; margin-top:20px;" onclick="saveBothFiles()">
                 <i class="fas fa-download"></i> SAVE BOTH VERSIONS
             </button>
@@ -203,6 +248,7 @@ body { margin: 0; }
                     <button id="btnWhiteLogo" class="wm-opt" onclick="addWM(logoWhite,'btnWhiteLogo')">White Logo</button>
                     <button id="btnGreyLogo" class="wm-opt active" onclick="addWM(logoGrey,'btnGreyLogo')">Grey Logo</button>
                 </div>
+                <p class="hint">Drag the photo or logo inside the preview to move it. Use the Rotate bar above the preview to rotate the photo. The guideline is for preview only and is not saved in the downloaded files.</p>
             </div>
         </div>
     </div>
@@ -220,7 +266,64 @@ const logoGrey  = 'https://eaglenithu.github.io/ripbookcontenthelp/RIP_Watermark
 const logoWhite = 'https://eaglenithu.github.io/ripbookcontenthelp/RIP_Watermark2.png';
 let uploadedCropImg = null, activeWM = null, baseScale = 1;
 
+// Objects can be dragged in the preview; resize/rotate handles are not used (zoom slider + rotate bar instead)
+function applyObjectState(obj) {
+    if (!obj) return;
+    obj.set({
+        hasControls: false,
+        hasBorders: false,
+        lockScalingX: true,
+        lockScalingY: true,
+        lockRotation: true
+    });
+    obj.setCoords();
+}
+
+// ── Rotate bar: left = rotate left (counter-clockwise), right = rotate right (clockwise) ──
+const rotateSlider = document.getElementById('rotateSlider');
+const rotateValue = document.getElementById('rotateValue');
+
+// skipInput = true while the user is typing, so the box is not rewritten under their cursor
+function applyRotation(angle, skipInput) {
+    if (!skipInput) rotateValue.value = Math.round(angle * 10) / 10;
+    if (!uploadedCropImg) return;
+    uploadedCropImg.rotate(angle);   // rotates around the photo's center
+    uploadedCropImg.setCoords();
+    cropCanvas.renderAll();
+}
+
+// Slider -> number box + photo
+rotateSlider.oninput = function() { applyRotation(parseFloat(this.value)); };
+
+// Number box -> slider + photo (live while typing)
+rotateValue.oninput = function() {
+    const v = parseFloat(this.value);
+    if (isNaN(v)) return;                       // empty or "-" while typing
+    const angle = Math.max(-180, Math.min(180, v));
+    rotateSlider.value = angle;
+    applyRotation(angle, true);
+};
+
+// When leaving the box or pressing Enter, clean up the value (clamp to -180..180, empty = 0)
+function commitRotationInput() {
+    let v = parseFloat(rotateValue.value);
+    if (isNaN(v)) v = 0;
+    v = Math.max(-180, Math.min(180, v));
+    rotateSlider.value = v;
+    applyRotation(v);
+}
+rotateValue.onchange = commitRotationInput;
+rotateValue.onkeydown = function(e) {
+    if (e.key === 'Enter') { commitRotationInput(); this.blur(); }
+};
+
+function resetRotation() {
+    rotateSlider.value = 0;
+    applyRotation(0);
+}
+
 document.getElementById('crop-upload').onchange = function(e) {
+    if (!e.target.files[0]) return;
     const r = new FileReader();
     r.onload = ev => { fabric.Image.fromURL(ev.target.result, img => setupCropImage(img)); };
     r.readAsDataURL(e.target.files[0]);
@@ -234,10 +337,13 @@ function setupCropImage(img) {
     cropCanvas.add(img);
     img.set({ left: cropCanvas.width / 2, top: cropCanvas.height / 2 });
     img.sendToBack();
-    cropCanvas.setActiveObject(img);
     uploadedCropImg = img;
+    applyObjectState(img);
     if (activeWM) activeWM.bringToFront();
     document.getElementById('zoomSlider').value = 1;
+    // New photo starts straight
+    rotateSlider.value = 0;
+    rotateValue.value = 0;
     cropCanvas.renderAll();
 }
 
@@ -245,6 +351,7 @@ document.getElementById('zoomSlider').oninput = function() {
     if (!uploadedCropImg) return;
     uploadedCropImg.scale(baseScale * parseFloat(this.value));
     uploadedCropImg.set({ left: cropCanvas.width / 2, top: cropCanvas.height / 2 });
+    uploadedCropImg.setCoords();
     cropCanvas.renderAll();
 };
 
@@ -312,8 +419,14 @@ async function processRemoveBG() {
 
     try {
         const blob = await tryRemoveBG(fileInput.files[0], 0);
+        // Keep the rotation the user already set when the background is removed
+        const keepAngle = parseFloat(rotateSlider.value) || 0;
         fabric.Image.fromURL(URL.createObjectURL(blob), img => {
             setupCropImage(img);
+            if (keepAngle) {
+                rotateSlider.value = keepAngle;
+                applyRotation(keepAngle);
+            }
             document.getElementById('bgColorControls').style.display = 'flex';
             Swal.close();
             Swal.fire({ icon: 'success', title: 'Background Removed', timer: 1500, showConfirmButton: false, background: '#1e293b', color: '#fff' });
@@ -342,12 +455,14 @@ function addWM(url, id) {
         cropCanvas.add(img);
         img.bringToFront();
         activeWM = img;
+        applyObjectState(img);
         cropCanvas.renderAll();
     }, { crossOrigin: 'anonymous' });
 }
 
 function saveBothFiles() {
     if (!uploadedCropImg) return;
+    // The guideline is an HTML overlay above the canvas, so it is never part of the export
     cropCanvas.discardActiveObject().renderAll();
     const a = document.createElement('a');
     a.download = 'ripbook_watermarked.png';
