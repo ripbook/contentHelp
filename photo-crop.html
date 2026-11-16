@@ -260,7 +260,16 @@ body { margin: 0; }
                 <img id="guidelineImg" class="guideline-overlay" src="https://ripbook.github.io/contentHelp/guideline.png" alt="Guideline" crossorigin="anonymous">
             </div>
 
-            <button class="btn" style="background:#27ae60; padding:16px; font-size:15px; margin-top:20px;" onclick="saveBothFiles()">
+            <div class="input-group" style="margin-top:15px;">
+                <label>4. Add RIPBOOK Logo</label>
+                <div class="wm-toggle-bar" style="margin-top:0;">
+                    <button id="btnWhiteLogo" class="wm-opt" onclick="addWM(logoWhite,'btnWhiteLogo')">White Logo</button>
+                    <button id="btnGreyLogo" class="wm-opt active" onclick="addWM(logoGrey,'btnGreyLogo')">Grey Logo</button>
+                </div>
+               
+            </div>
+
+            <button class="btn" style="background:#27ae60; padding:16px; font-size:15px; margin-top:15px;" onclick="saveBothFiles()">
                 <i class="fas fa-download"></i> SAVE BOTH VERSIONS
             </button>
         </div>
@@ -306,14 +315,6 @@ body { margin: 0; }
                 </div>
             </div>
 
-            <div class="input-group">
-                <label>4. Add RIPBOOK Logo</label>
-                <div class="wm-toggle-bar">
-                    <button id="btnWhiteLogo" class="wm-opt" onclick="addWM(logoWhite,'btnWhiteLogo')">White Logo</button>
-                    <button id="btnGreyLogo" class="wm-opt active" onclick="addWM(logoGrey,'btnGreyLogo')">Grey Logo</button>
-                </div>
-                <p class="hint">Drag the photo or logo inside the preview to move it. Use the Rotate bar above the preview to rotate the photo. The guideline is for preview only and is not saved in the downloaded files.</p>
-            </div>
         </div>
     </div>
 </div>
